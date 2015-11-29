@@ -482,7 +482,7 @@ local ToUpdate = {}
     ToUpdate.ScriptPath =  "/Icesythe7/GOS/master/SkinChanger.lua"
     ToUpdate.SavePath = SCRIPT_PATH.."/SkinChanger.lua"
     ToUpdate.CallbackUpdate = function(NewVersion,OldVersion) displayBubble(2, {"SkinChanger: Updated to ("..NewVersion..") Please Reload with 2x F6. "}) end
-    ToUpdate.CallbackNoUpdate = function(OldVersion) displayBubble(2, {"SkinChanger: No Updates Found! Version 0.02 Loaded, Good Luck " .. GetObjectBaseName(GetMyHero()) .. "  "}) end
+    ToUpdate.CallbackNoUpdate = function(OldVersion) displayBubble(2, {"SkinChanger: No Updates Found! Version 0.02 Loaded, Good Luck " .. GetObjectBaseName(GetMyHero()) .. "!    "}) end
     ToUpdate.CallbackNewVersion = function(NewVersion) displayBubble(2, {"SkinChanger: New Version found ("..NewVersion.."). Please wait until its downloaded  "}) end
     ToUpdate.CallbackError = function(NewVersion) displayBubble(2, {"SkinChanger: Error while Downloading. Please try again.  "}) end
     ScriptUpdate(ToUpdate.Version,ToUpdate.UseHttps, ToUpdate.Host, ToUpdate.VersionPath, ToUpdate.ScriptPath, ToUpdate.SavePath, ToUpdate.CallbackUpdate,ToUpdate.CallbackNoUpdate, ToUpdate.CallbackNewVersion,ToUpdate.CallbackError)
