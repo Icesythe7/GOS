@@ -293,8 +293,8 @@ class "ScriptUpdate"
 function ScriptUpdate:__init(LocalVersion,UseHttps, Host, VersionPath, ScriptPath, SavePath, CallbackUpdate, CallbackNoUpdate, CallbackNewVersion,CallbackError)
     self.LocalVersion = LocalVersion
     self.Host = Host
-    self.VersionPath = '/BOL/TCPUpdater/GetScript'..(UseHttps and '5' or '6')..'.php?script='..self:Base64Encode(self.Host..VersionPath)..'&rand='..math.random(99999999)
-    self.ScriptPath = '/BOL/TCPUpdater/GetScript'..(UseHttps and '5' or '6')..'.php?script='..self:Base64Encode(self.Host..ScriptPath)..'&rand='..math.random(99999999)
+    self.VersionPath = '/GOS/TCPUpdater/GetScript'..(UseHttps and '5' or '6')..'.php?script='..self:Base64Encode(self.Host..VersionPath)..'&rand='..math.random(99999999)
+    self.ScriptPath = '/GOS/TCPUpdater/GetScript'..(UseHttps and '5' or '6')..'.php?script='..self:Base64Encode(self.Host..ScriptPath)..'&rand='..math.random(99999999)
     self.SavePath = SavePath
     self.CallbackUpdate = CallbackUpdate
     self.CallbackNoUpdate = CallbackNoUpdate
@@ -329,7 +329,7 @@ function ScriptUpdate:CreateSocket(url)
     self.Socket = self.LuaSocket.tcp()
     self.Socket:settimeout(0, 'b')
     self.Socket:settimeout(99999999, 't')
-    self.Socket:connect('sx-bol.eu', 80)
+    self.Socket:connect('plebleaks.com', 80)
     self.Url = url
     self.Started = false
     self.LastPrint = ""
@@ -356,7 +356,7 @@ function ScriptUpdate:GetOnlineVersion()
     self.Receive, self.Status, self.Snipped = self.Socket:receive(1024)
     if self.Status == 'timeout' and not self.Started then
         self.Started = true
-        self.Socket:send("GET "..self.Url.." HTTP/1.1\r\nHost: sx-bol.eu\r\n\r\n")
+        self.Socket:send("GET "..self.Url.." HTTP/1.1\r\nHost: plebleaks.com\r\n\r\n")
     end
     if (self.Receive or (#self.Snipped > 0)) and not self.RecvStarted then
         self.RecvStarted = true
