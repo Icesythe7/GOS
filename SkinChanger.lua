@@ -459,7 +459,7 @@ local ToUpdate = {}
     ScriptUpdate(ToUpdate.Version,ToUpdate.UseHttps, ToUpdate.Host, ToUpdate.VersionPath, ToUpdate.ScriptPath, ToUpdate.SavePath, ToUpdate.CallbackUpdate,ToUpdate.CallbackNoUpdate, ToUpdate.CallbackNewVersion,ToUpdate.CallbackError)
 
 
-displayBubble(2, {"SkinChanger Loaded! Good Luck " .. GetObjectBaseName(GetMyHero()) .. "  "}) 
+displayBubble(2, {"SkinChanger Ver 0.02 Loaded! Good Luck " .. GetObjectBaseName(GetMyHero()) .. "  "}) 
 
 --[[
 "Chroma Pack: Yellow", "Chroma Pack: Red", "Chroma Pack: Blue",
