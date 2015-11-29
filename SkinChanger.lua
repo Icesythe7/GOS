@@ -1,19 +1,6 @@
 require("Inspired") 
 require("base64")
 
-local ToUpdate = {}
-    ToUpdate.Version = 0.02
-    ToUpdate.UseHttps = true
-    ToUpdate.Host = "raw.githubusercontent.com"
-    ToUpdate.VersionPath = "/Icesythe7/GOS/master/SkinChanger.Version"
-    ToUpdate.ScriptPath =  "/Icesythe7/GOS/master/SkinChanger.lua"
-    ToUpdate.SavePath = SCRIPT_PATH.."/SkinChanger.lua"
-    ToUpdate.CallbackUpdate = function(NewVersion,OldVersion) print("<font color=\"#E60066\"><b>SkinChanger: </b></font> <font color=\"#00FFFF\">Updated to ("..NewVersion..") Please Reload with 2x F6. </b></font>") end
-    ToUpdate.CallbackNoUpdate = function(OldVersion) print("<font color=\"#E60066\"><b>SkinChanger: </b></font> <font color=\"#00FFFF\">No Updates Found</b></font>") end
-    ToUpdate.CallbackNewVersion = function(NewVersion) print("<font color=\"#E60066\"><b>SkinChanger: </b></font> <font color=\"#00FFFF\">New Version found ("..NewVersion.."). Please wait until its downloaded</b></font>") end
-    ToUpdate.CallbackError = function(NewVersion) print("<font color=\"#E60066\"><b>SkinChanger: </b></font> <font color=\"#00FFFF\">Error while Downloading. Please try again.</b></font>") end
-    ScriptUpdate(ToUpdate.Version,ToUpdate.UseHttps, ToUpdate.Host, ToUpdate.VersionPath, ToUpdate.ScriptPath, ToUpdate.SavePath, ToUpdate.CallbackUpdate,ToUpdate.CallbackNoUpdate, ToUpdate.CallbackNewVersion,ToUpdate.CallbackError)
-
 local skinMeta = {
 
   -- A
@@ -457,6 +444,20 @@ function ScriptUpdate:DownloadUpdate()
         self.GotScriptUpdate = true
     end
 end
+
+local ToUpdate = {}
+    ToUpdate.Version = 0.02
+    ToUpdate.UseHttps = true
+    ToUpdate.Host = "raw.githubusercontent.com"
+    ToUpdate.VersionPath = "/Icesythe7/GOS/master/SkinChanger.Version"
+    ToUpdate.ScriptPath =  "/Icesythe7/GOS/master/SkinChanger.lua"
+    ToUpdate.SavePath = SCRIPT_PATH.."/SkinChanger.lua"
+    ToUpdate.CallbackUpdate = function(NewVersion,OldVersion) print("<font color=\"#E60066\"><b>SkinChanger: </b></font> <font color=\"#00FFFF\">Updated to ("..NewVersion..") Please Reload with 2x F6. </b></font>") end
+    ToUpdate.CallbackNoUpdate = function(OldVersion) print("<font color=\"#E60066\"><b>SkinChanger: </b></font> <font color=\"#00FFFF\">No Updates Found</b></font>") end
+    ToUpdate.CallbackNewVersion = function(NewVersion) print("<font color=\"#E60066\"><b>SkinChanger: </b></font> <font color=\"#00FFFF\">New Version found ("..NewVersion.."). Please wait until its downloaded</b></font>") end
+    ToUpdate.CallbackError = function(NewVersion) print("<font color=\"#E60066\"><b>SkinChanger: </b></font> <font color=\"#00FFFF\">Error while Downloading. Please try again.</b></font>") end
+    ScriptUpdate(ToUpdate.Version,ToUpdate.UseHttps, ToUpdate.Host, ToUpdate.VersionPath, ToUpdate.ScriptPath, ToUpdate.SavePath, ToUpdate.CallbackUpdate,ToUpdate.CallbackNoUpdate, ToUpdate.CallbackNewVersion,ToUpdate.CallbackError)
+
 
 displayBubble(2, {"SkinChanger Loaded! Good Luck " .. GetObjectBaseName(GetMyHero()) .. "  "}) 
 
