@@ -439,6 +439,7 @@ function ScriptUpdate:DownloadUpdate()
     end
     if self.File:find('</scr'..'ipt>') then
         self.DownloadStatus = 'Downloading Script (100%)'
+        GetSave("SkinChangerUpdate").entry = 1 
         local a,b = self.File:find('\r\n\r\n')
         self.File = self.File:sub(a,-1)
         self.NewFile = ''
@@ -471,7 +472,6 @@ function ScriptUpdate:DownloadUpdate()
                 end
         end
         self.GotScriptUpdate = true
-        GetSave("SkinChangerUpdate").entry = 1 
     end
 end
 
@@ -494,7 +494,7 @@ local ToUpdate = {}
     ToUpdate.VersionPath = "/Icesythe7/GOS/master/SkinChanger.Version"
     ToUpdate.ScriptPath =  "/Icesythe7/GOS/master/SkinChanger.lua"
     ToUpdate.SavePath = SCRIPT_PATH.."/SkinChanger.lua"
-    ToUpdate.CallbackUpdate = function(NewVersion,OldVersion) displayBubble(2, {"SkinChanger: Updated to ("..NewVersion..") Please Reload with 2x F6. "}) end
+    ToUpdate.CallbackUpdate = function(NewVersion,OldVersion) GetSave("SkinChangerUpdate").entry = 1 displayBubble(2, {"SkinChanger: Updated to ("..NewVersion..") Please Reload with 2x F6. "}) end
     ToUpdate.CallbackNoUpdate = function(OldVersion) displayBubble(2, {"SkinChanger: No Updates Found! Version 0.02 Loaded, Good Luck " .. GetObjectBaseName(GetMyHero()) .. "!    "}) end
     ToUpdate.CallbackNewVersion = function(NewVersion) displayBubble(2, {"SkinChanger: New Version found ("..NewVersion.."). Please wait until its downloaded  "}) end
     ToUpdate.CallbackError = function(NewVersion) displayBubble(2, {"SkinChanger: Error while Downloading. Please try again.  "}) end
