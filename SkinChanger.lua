@@ -475,6 +475,18 @@ function ScriptUpdate:DownloadUpdate()
     end
 end
 
+local PopUp1 = false
+
+if not GetSave("SkinChangerUpdate").entry then
+    GetSave("SkinChangerUpdate").entry = 1
+end
+local mySavedShit = GetSave("SkinChangerUpdate").entry
+
+if mySavedShit == 1 then
+  GetSave("SkinChangerUpdate").entry = 0
+  PopUp1 = true
+end
+
 local ToUpdate = {}
     ToUpdate.Version = 0.02
     ToUpdate.UseHttps = true
@@ -514,17 +526,7 @@ end)
 ]]
 
 
-local PopUp1 = false
 
-if not GetSave("SkinChangerUpdate").entry then
-    GetSave("SkinChangerUpdate").entry = 1
-end
-local mySavedShit = GetSave("SkinChangerUpdate").entry
-
-if mySavedShit == 1 then
-  GetSave("SkinChangerUpdate").entry = 0
-  PopUp1 = true
-end
 
 OnDraw (function()
   if PopUp1 then
