@@ -548,18 +548,21 @@ local w, h1, h2, size = (res.x*0.70), (res.y*.15), (res.y*.9), res.y*.02
     DrawText(tostring("             Skin Objects."), res.y*.015, (res.x/2.65), (res.y*.360), ARGB(255, 255, 255, 255))
     DrawText(tostring("             Particles?"), res.y*.015, (res.x/2.65), (res.y*.375), ARGB(255, 255, 255, 255))
     local w1, w2, h1, h2 = (res.x/2)-50, (res.x/2)+50, (res.y*.70), (res.y*.75)
-    DrawLine(w1, h1/1.775, w2, h1/1.775, 50, ARGB(122, 255, 0, 255)) -- pink box? ya
+    DrawLine(w1, h1/1.775, w2, h1/1.775, 50, ARGB(122, 255, 0, 255)) 
     --DrawLine(w*.98, h1*.98, w*.98, h2*.98, w*.1*.98, ARGB(205,255,255,255))
     FillRect(w1+10, (res.y/2)-103, 80, 30, ARGB(255,0,255,255))
-    DrawText(tostring("OK"),size, (res.x/2)-size+10, (res.y/2)-100, ARGB(255,0, 0, 0)) -- sec
+    DrawText(tostring("OK"),size, (res.x/2)-size+10, (res.y/2)-100, ARGB(255,0, 0, 0)) 
 
   end
 end)
 
+local res = GetResolution()
 OnWndMsg (function(a, b)
   if a == WM_LBUTTONDOWN then
-    if PopUp1 then
-      PopUp1 = false
+    if GetCursorPos().x > (res.x/2)-50+10 and GetCursorPos().x < (res.x/2)-50+10 + 80 and GetCursorPos().y > (res.y/2)-103 and GetCursorPos().y < (res.y/2)-103 + 30 then
+      if PopUp1 then
+        PopUp1 = false 
+      end
     end
   end
 end)
