@@ -487,14 +487,14 @@ if mySavedShit == 1 then
 end
 
 local ToUpdate = {}
-    ToUpdate.Version = 0.02
+    ToUpdate.Version = 0.03
     ToUpdate.UseHttps = true
     ToUpdate.Host = "raw.githubusercontent.com"
     ToUpdate.VersionPath = "/Icesythe7/GOS/master/SkinChanger.Version"
     ToUpdate.ScriptPath =  "/Icesythe7/GOS/master/SkinChanger.lua"
     ToUpdate.SavePath = SCRIPT_PATH.."/SkinChanger.lua"
     ToUpdate.CallbackUpdate = function(NewVersion,OldVersion) GetSave("SkinChangerUpdate").entry = 1 GetSave("SkinChangerUpdate"):Save() displayBubble(2, {"SkinChanger: Updated to ("..NewVersion..") Please Reload with 2x F6. "}) end
-    ToUpdate.CallbackNoUpdate = function(OldVersion) displayBubble(2, {"SkinChanger: No Updates Found! Version 0.02 Loaded, Good Luck " .. GetObjectBaseName(GetMyHero()) .. "!    "}) end
+    ToUpdate.CallbackNoUpdate = function(OldVersion) displayBubble(2, {"SkinChanger: No Updates Found! Version " ..ToUpdate.Version.. " Loaded, Good Luck " .. GetObjectBaseName(GetMyHero()) .. "!    "}) end
     ToUpdate.CallbackNewVersion = function(NewVersion) displayBubble(2, {"SkinChanger: New Version found ("..NewVersion.."). Please wait until its downloaded  "}) end
     ToUpdate.CallbackError = function(NewVersion) displayBubble(2, {"SkinChanger: Error while Downloading. Please try again.  "}) end
     ScriptUpdate(ToUpdate.Version,ToUpdate.UseHttps, ToUpdate.Host, ToUpdate.VersionPath, ToUpdate.ScriptPath, ToUpdate.SavePath, ToUpdate.CallbackUpdate,ToUpdate.CallbackNoUpdate, ToUpdate.CallbackNewVersion,ToUpdate.CallbackError)
@@ -534,13 +534,13 @@ local w, h1, h2, size = (res.x*0.70), (res.y*.15), (res.y*.9), res.y*.02
     DrawLine(w, h1/1.05, w, h2/1.97, w/1.75, ARGB(120,205,0,0))
     DrawLine(w, h1, w, h2/1.97, w/1.75, ARGB(120,50,0,0))
     DrawText(tostring("SkinChanger Changelog"), res.y * .028, (res.x/2.4), (res.y*.18), ARGB(255, 0 , 255, 255))
-    DrawText(tostring("Ver 0.02:"), res.y*.015, (res.x/2.65), (res.y*.210), ARGB(225, 225, 175, 0))
-    DrawText(tostring("               Added a few chroma packs and an auto-updater."), res.y*.015, (res.x/2.65), (res.y*.225), ARGB(255, 255, 255, 255))
-    DrawText(tostring("Ver 0.01"), res.y*.015, (res.x/2.65), (res.y*.240), ARGB(225, 225, 175, 0))
-    DrawText(tostring("               Initial Release."), res.y*.015, (res.x/2.65), (res.y*.255), ARGB(255, 255, 255, 255))
+    DrawText(tostring("Ver 0.03:"), res.y*.015, (res.x/2.65), (res.y*.210), ARGB(225, 225, 175, 0))
+    DrawText(tostring("               Added changelog popup and few optimizations."), res.y*.015, (res.x/2.65), (res.y*.225), ARGB(255, 255, 255, 255))
+    DrawText(tostring("Ver 0.02"), res.y*.015, (res.x/2.65), (res.y*.240), ARGB(225, 225, 175, 0))
+    DrawText(tostring("               Added a few chroma packs and an auto-updater."), res.y*.015, (res.x/2.65), (res.y*.255), ARGB(255, 255, 255, 255))
     DrawText(tostring(""), res.y*.015, (res.x/2.65), (res.y*.270), ARGB(255, 255, 255, 255))
-    DrawText(tostring(""), res.y*.015, (res.x/2.65), (res.y*.285), ARGB(255, 255, 255, 255))
-    DrawText(tostring("---------------------------------------------------------------"), res.y*.015, (res.x/2.65), (res.y*.300), ARGB(255, 255, 255, 255))
+    DrawText(tostring("              ())__CRAYON___)) >"), res.y*.015, (res.x/2.65), (res.y*.285), ARGB(255, 255, 255, 255))
+    DrawText(tostring(""), res.y*.015, (res.x/2.65), (res.y*.300), ARGB(255, 255, 255, 255))
     DrawText(tostring("TODO:"), res.y*.015, (res.x/2.65), (res.y*.315), ARGB(225, 225, 175, 0))
     DrawText(tostring("             Fix form changing champs."), res.y*.015, (res.x/2.65), (res.y*.330), ARGB(255, 255, 255, 255))
     DrawText(tostring("             Add the rest of the chroma packs."), res.y*.015, (res.x/2.65), (res.y*.345), ARGB(255, 255, 255, 255))
@@ -557,9 +557,9 @@ end)
 
 local res = GetResolution()
 OnWndMsg (function(a, b)
-  if a == WM_LBUTTONDOWN then
-    if GetCursorPos().x > (res.x/2)-50+10 and GetCursorPos().x < (res.x/2)-50+10 + 80 and GetCursorPos().y > (res.y/2)-103 and GetCursorPos().y < (res.y/2)-103 + 30 then
-      if PopUp1 then
+  if PopUp1 then
+    if a == WM_LBUTTONDOWN then
+      if CursorIsUnder(res.x*.5-40, res.y*.5-103, 70, 30) then
         PopUp1 = false 
       end
     end
