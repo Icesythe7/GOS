@@ -438,8 +438,7 @@ function ScriptUpdate:DownloadUpdate()
         end
     end
     if self.File:find('</scr'..'ipt>') then
-        self.DownloadStatus = 'Downloading Script (100%)'
-        GetSave("SkinChangerUpdate").entry = 1 
+        self.DownloadStatus = 'Downloading Script (100%)' 
         local a,b = self.File:find('\r\n\r\n')
         self.File = self.File:sub(a,-1)
         self.NewFile = ''
