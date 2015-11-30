@@ -471,6 +471,7 @@ function ScriptUpdate:DownloadUpdate()
                 end
         end
         self.GotScriptUpdate = true
+        GetSave("SkinChangerUpdate").entry = 1 
     end
 end
 
@@ -511,3 +512,52 @@ OnCreateObj (function(Object)
   end
 end)
 ]]
+
+
+local PopUp1 = false
+
+if not GetSave("SkinChangerUpdate").entry then
+    GetSave("SkinChangerUpdate").entry = 1
+end
+local mySavedShit = GetSave("SkinChangerUpdate").entry
+
+if mySavedShit == 1 then
+  GetSave("SkinChangerUpdate").entry = 0
+  PopUp1 = true
+end
+
+OnDraw (function()
+  if PopUp1 then
+local res = GetResolution()
+local w, h1, h2, size = (res.x*0.70), (res.y*.15), (res.y*.9), res.y*.02
+    DrawLine(w, h1/1.05, w, h2/1.97, w/1.75, ARGB(120,205,0,0))
+    DrawLine(w, h1, w, h2/1.97, w/1.75, ARGB(120,50,0,0))
+    DrawText(tostring("SkinChanger Changelog"), res.y * .028, (res.x/2.4), (res.y*.18), ARGB(255, 0 , 255, 255))
+    DrawText(tostring("Ver 0.02:"), res.y*.015, (res.x/2.65), (res.y*.210), ARGB(225, 225, 175, 0))
+    DrawText(tostring("               Added a few chroma packs and an auto-updater."), res.y*.015, (res.x/2.65), (res.y*.225), ARGB(255, 255, 255, 255))
+    DrawText(tostring("Ver 0.01"), res.y*.015, (res.x/2.65), (res.y*.240), ARGB(225, 225, 175, 0))
+    DrawText(tostring("               Initial Release."), res.y*.015, (res.x/2.65), (res.y*.255), ARGB(255, 255, 255, 255))
+    DrawText(tostring(""), res.y*.015, (res.x/2.65), (res.y*.270), ARGB(255, 255, 255, 255))
+    DrawText(tostring(""), res.y*.015, (res.x/2.65), (res.y*.285), ARGB(255, 255, 255, 255))
+    DrawText(tostring("---------------------------------------------------------------"), res.y*.015, (res.x/2.65), (res.y*.300), ARGB(255, 255, 255, 255))
+    DrawText(tostring("TODO:"), res.y*.015, (res.x/2.65), (res.y*.315), ARGB(225, 225, 175, 0))
+    DrawText(tostring("             Fix form changing champs."), res.y*.015, (res.x/2.65), (res.y*.330), ARGB(255, 255, 255, 255))
+    DrawText(tostring("             Add the rest of the chroma packs."), res.y*.015, (res.x/2.65), (res.y*.345), ARGB(255, 255, 255, 255))
+    DrawText(tostring("             Skin Objects."), res.y*.015, (res.x/2.65), (res.y*.360), ARGB(255, 255, 255, 255))
+    DrawText(tostring("             Particles?"), res.y*.015, (res.x/2.65), (res.y*.375), ARGB(255, 255, 255, 255))
+    local w1, w2, h1, h2 = (res.x/2)-50, (res.x/2)+50, (res.y*.70), (res.y*.75)
+    DrawLine(w1, h1/1.775, w2, h1/1.775, 50, ARGB(122, 255, 0, 255)) -- pink box? ya
+    --DrawLine(w*.98, h1*.98, w*.98, h2*.98, w*.1*.98, ARGB(205,255,255,255))
+    FillRect(w1+10, (res.y/2)-103, 80, 30, ARGB(255,0,255,255))
+    DrawText(tostring("OK"),size, (res.x/2)-size+10, (res.y/2)-100, ARGB(255,0, 0, 0)) -- sec
+
+  end
+end)
+
+OnWndMsg (function(a, b)
+  if a == WM_LBUTTONDOWN then
+    if PopUp1 then
+      PopUp1 = false
+    end
+  end
+end)
