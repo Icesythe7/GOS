@@ -23,7 +23,7 @@ local skinMeta = {
 ["Chogath"]      = {"Classic", "Nightmare", "Gentleman", "Loch Ness", "Jurassic", "Battlecast Prime", "Prehistoric"},
 ["Corki"]        = {"Classic", "UFO", "Ice Toboggan", "Red Baron", "Hot Rod", "Urfrider", "Dragonwing", "Fnatic"},
   -- D
-["Darius"]       = {"Classic", "Lord", "Bioforge", "Woad King", "Dunkmaster", "Academy"},
+["Darius"]       = {"Classic", "Lord", "Bioforge", "Woad King", "Dunkmaster", "Chroma Pack: Black Iron", "Chroma Pack: Bronze", "Chroma Pack: Copper", "Academy"},
 ["Diana"]        = {"Classic", "Dark Valkyrie", "Lunar Goddess"},
 ["DrMundo"]      = {"Classic", "Toxic", "Mr. Mundoverse", "Corporate Mundo", "Mundo Mundo", "Executioner Mundo", "Rageborn Mundo", "TPA Mundo", "Pool Party"},
 ["Draven"]       = {"Classic", "Soul Reaver", "Gladiator", "Primetime", "Pool Party"},
@@ -35,7 +35,7 @@ local skinMeta = {
   -- F 
 ["FiddleSticks"] = {"Classic", "Spectral", "Union Jack", "Bandito", "Pumpkinhead", "Fiddle Me Timbers", "Surprise Party", "Dark Candy", "Risen"},
 ["Fiora"]        = {"Classic", "Royal Guard", "Nightraven", "Headmistress", "PROJECT"},
-["Fizz"]         = {"Classic", "Atlantean", "Tundra", "Fisherman", "Void", "Cottontail"},
+["Fizz"]         = {"Classic", "Atlantean", "Tundra", "Fisherman", "Void", "Chroma Pack: Orange", "Chroma Pack: Black", "Chroma Pack: Red", "Cottontail"},
   -- G  
 ["Galio"]        = {"Classic", "Enchanted", "Hextech", "Commando", "Gatekeeper", "Debonair"},
 ["Gangplank"]    = {"Classic", "Spooky", "Minuteman", "Sailor", "Toy Soldier", "Special Forces", "Sultan", "Captain"},
@@ -151,7 +151,7 @@ local skinMeta = {
 ["Yasuo"]        = {"Classic", "High Noon", "PROJECT"},
 ["Yorick"]       = {"Classic", "Undertaker", "Pentakill"},
   -- Z 
-["Zac"]          = {"Classic", "Special Weapon", "Pool Party"},
+["Zac"]          = {"Classic", "Special Weapon", "Pool Party", "Chroma Pack: Orange", "Chroma Pack: Bubblegum", "Chroma Pack: Honey"},
 ["Zed"]          = {"Classic", "Shockblade", "SKT T1", "PROJECT"},
 ["Ziggs"]        = {"Classic", "Mad Scientist", "Major", "Pool Party", "Snow Day", "Master Arcanist"},
 ["Zilean"]       = {"Classic", "Old Saint", "Groovy", "Shurima Desert", "Time Machine", "Blood Moon"},
@@ -487,7 +487,7 @@ if mySavedShit == 1 then
 end
 
 local ToUpdate = {}
-    ToUpdate.Version = 0.03
+    ToUpdate.Version = 0.04
     ToUpdate.UseHttps = true
     ToUpdate.Host = "raw.githubusercontent.com"
     ToUpdate.VersionPath = "/Icesythe7/GOS/master/SkinChanger.Version"
@@ -506,9 +506,6 @@ local ToUpdate = {}
 
 nami
 bard 
-zac
-darius
-fizz
 
 
 
@@ -534,16 +531,16 @@ local w, h1, h2, size = (res.x*0.70), (res.y*.15), (res.y*.9), res.y*.02
     DrawLine(w, h1/1.05, w, h2/1.97, w/1.75, ARGB(120,205,0,0))
     DrawLine(w, h1, w, h2/1.97, w/1.75, ARGB(120,50,0,0))
     DrawText(tostring("SkinChanger Changelog"), res.y * .028, (res.x/2.4), (res.y*.18), ARGB(255, 0 , 255, 255))
-    DrawText(tostring("Ver 0.03:"), res.y*.015, (res.x/2.65), (res.y*.210), ARGB(225, 225, 175, 0))
-    DrawText(tostring("               Added changelog popup and few optimizations."), res.y*.015, (res.x/2.65), (res.y*.225), ARGB(255, 255, 255, 255))
-    DrawText(tostring("Ver 0.02"), res.y*.015, (res.x/2.65), (res.y*.240), ARGB(225, 225, 175, 0))
-    DrawText(tostring("               Added a few chroma packs and an auto-updater."), res.y*.015, (res.x/2.65), (res.y*.255), ARGB(255, 255, 255, 255))
+    DrawText(tostring("Ver 0.04:"), res.y*.015, (res.x/2.65), (res.y*.210), ARGB(225, 225, 175, 0))
+    DrawText(tostring("               Added all chroma packs except Nami and Bard."), res.y*.015, (res.x/2.65), (res.y*.225), ARGB(255, 255, 255, 255))
+    DrawText(tostring("Ver 0.03"), res.y*.015, (res.x/2.65), (res.y*.240), ARGB(225, 225, 175, 0))
+    DrawText(tostring("               Added changelog popup and few optimizations."), res.y*.015, (res.x/2.65), (res.y*.255), ARGB(255, 255, 255, 255))
     DrawText(tostring(""), res.y*.015, (res.x/2.65), (res.y*.270), ARGB(255, 255, 255, 255))
     DrawText(tostring("              ())__CRAYON___)) >"), res.y*.015, (res.x/2.65), (res.y*.285), ARGB(255, 255, 255, 255))
     DrawText(tostring(""), res.y*.015, (res.x/2.65), (res.y*.300), ARGB(255, 255, 255, 255))
     DrawText(tostring("TODO:"), res.y*.015, (res.x/2.65), (res.y*.315), ARGB(225, 225, 175, 0))
     DrawText(tostring("             Fix form changing champs."), res.y*.015, (res.x/2.65), (res.y*.330), ARGB(255, 255, 255, 255))
-    DrawText(tostring("             Add the rest of the chroma packs."), res.y*.015, (res.x/2.65), (res.y*.345), ARGB(255, 255, 255, 255))
+    DrawText(tostring("             Add Nami and Bards chroma packs."), res.y*.015, (res.x/2.65), (res.y*.345), ARGB(255, 255, 255, 255))
     DrawText(tostring("             Skin Objects."), res.y*.015, (res.x/2.65), (res.y*.360), ARGB(255, 255, 255, 255))
     DrawText(tostring("             Particles?"), res.y*.015, (res.x/2.65), (res.y*.375), ARGB(255, 255, 255, 255))
     local w1, w2, h1, h2 = (res.x/2)-50, (res.x/2)+50, (res.y*.70), (res.y*.75)
