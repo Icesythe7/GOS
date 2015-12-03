@@ -176,6 +176,67 @@ local SkinObjects = {
 
 }
 
+local menuTable = {
+
+["Orders"] = {"Disabled","QWE","QEW","WQE","WEQ","EQW","EWQ"}
+
+}
+
+local orderTable = {
+  
+[1] = {nil},
+[2] = {_Q,_W,_E,_Q,_Q,_R,_Q,_W,_Q,_W,_R,_W,_W,_E,_E,_R,_E,_E}, 
+[3] = {_Q,_E,_W,_Q,_Q,_R,_Q,_E,_Q,_E,_R,_E,_E,_W,_W,_R,_W,_W},
+[4] = {_W,_Q,_E,_W,_W,_R,_W,_Q,_W,_Q,_R,_Q,_Q,_E,_E,_R,_E,_E},
+[5] = {_W,_E,_Q,_W,_W,_R,_W,_E,_W,_E,_R,_E,_E,_Q,_Q,_R,_Q,_Q},
+[6] = {_E,_Q,_W,_E,_E,_R,_E,_Q,_E,_Q,_R,_Q,_Q,_W,_W,_R,_W,_W},
+[7] = {_E,_W,_Q,_E,_E,_R,_E,_W,_E,_W,_R,_W,_W,_Q,_Q,_R,_Q,_Q},
+
+}
+
+local orderChat = {
+  
+[1] = "Disabled",
+[2] = "QWE", 
+[3] = "QEW",
+[4] = "WQE",
+[5] = "WEQ",
+[6] = "EQW",
+[7] = "EWQ",
+
+}
+
+local res = GetResolution()
+local myHero = GetMyHero()
+local globalTick = 0
+
+OnTick (function() 
+  GetskilllvlUp  = (GetCastLevel(myHero,_Q) + GetCastLevel(myHero,_W) + GetCastLevel(myHero,_E) + GetCastLevel(myHero,_R) + 1)
+  GetskilllvlUp2 = (GetskilllvlUp - 1)
+  if GetskilllvlUp > GetLevel(myHero) then
+    GetskilllvlUp = (GetskilllvlUp - 1)
+  end
+
+  if GetLevel(myHero) > GetskilllvlUp2 then
+    canlvlSpell = true
+  else 
+    canlvlSpell = false
+  end
+
+  if Config.levelorder:Value() ~= 1 and canlvlSpell then
+    local Ticker = GetTickCount()
+    if (globalTick + math.random(300,1000)) < Ticker then
+        --print("Current skill level-up " .. GetskilllvlUp .. ". Champion current level " .. GetLevel(myHero) .. ".")    
+        LevelSpell(levelspellorder[GetskilllvlUp])
+        globalTick = Ticker
+    end
+  end
+
+  if not canlvlSpell then
+    --print("No spells available to level.")
+  end
+end)
+
 bubbles = ""
 bubblesTimer = 0
 staticString = ""
@@ -193,7 +254,6 @@ local function displayBubble(delay,msg)
 end
 
 local function OnScreen(x, y)
-    local res = GetResolution()
     return x > 0 and x <= res.x and y > 0 and y <= res.y
 end
 
@@ -252,12 +312,14 @@ OnDraw(function()
     end
 end)
 
-Config = Menu("SkinChanger", "Skinchanger")
-Config:DropDown('skin', GetObjectName(myHero), lastSkin, skinMeta[GetObjectName(myHero)], HeroSkinChanger, true)
-Config.skin.callback = function(model)
-                          HeroSkinChanger(GetMyHero(), model - 1)
-                          displayBubble(2, {skinMeta[GetObjectName(myHero)][model] .." ".. GetObjectName(myHero) .. " Loaded!"})
-                        end
+Config = Menu("SkinChanger & Auto-leveler", "Skinchanger")
+Config:DropDown('skin', GetObjectName(myHero), 0, skinMeta[GetObjectName(myHero)], HeroSkinChanger, true)
+Config.skin:Value(0)
+Config.skin.callback = function(model) HeroSkinChanger(GetMyHero(), model - 1) displayBubble(2, {skinMeta[GetObjectName(myHero)][model] .." ".. GetObjectName(myHero) .. " Loaded!"}) end
+Config:DropDown("levelorder", "Level Order", 1, menuTable["Orders"], LevelSpell, true)
+Config.levelorder:Value(1)
+Config.levelorder.callback = function(order) levelspellorder = orderTable[order] displayBubble(2, {"Auto-leveling spells in order " .. orderChat[order] .. "."}) end
+
 
 local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
@@ -318,8 +380,7 @@ end
 
 function ScriptUpdate:OnDraw()
   if self.DownloadStatus ~= 'Downloading Script (100%)' and self.DownloadStatus ~= 'Downloading VersionInfo (100%)'then
-    local res = GetResolution()
-    local bP = {['x1'] = res.x - (res.x - 390),['x2'] = res.x - (res.x - 20),['y1'] = res.y / 2,['y2'] = (res.y / 2) + 20,}
+      local bP = {['x1'] = res.x - (res.x - 390),['x2'] = res.x - (res.x - 20),['y1'] = res.y / 2,['y2'] = (res.y / 2) + 20,}
     local text = 'Download Status: '..(self.DownloadStatus or 'Unknown')
     DrawLine(bP.x1, bP.y1 + 20, bP.x2,  bP.y1 + 20, 20, ARGB(125, 255, 255, 255))
     local xOff
@@ -507,7 +568,7 @@ if mySavedShit == 1 then
 end
 
 local ToUpdate = {}
-    ToUpdate.Version = 0.06
+    ToUpdate.Version = 0.10
     ToUpdate.UseHttps = true
     ToUpdate.Host = "raw.githubusercontent.com"
     ToUpdate.VersionPath = "/Icesythe7/GOS/master/SkinChanger.Version"
@@ -535,15 +596,14 @@ end)
 
 OnDraw (function()
   if PopUp1 then
-local res = GetResolution()
 local w, h1, h2, size = (res.x*0.70), (res.y*.15), (res.y*.9), res.y*.02
     DrawLine(w, h1/1.05, w, h2/1.97, w/1.75, ARGB(120,205,0,0))
     DrawLine(w, h1, w, h2/1.97, w/1.75, ARGB(120,50,0,0))
     DrawText(tostring("SkinChanger Changelog"), res.y * .028, (res.x/2.4), (res.y*.18), ARGB(255, 0 , 255, 255))
-    DrawText(tostring("Ver 0.06:"), res.y*.015, (res.x/2.65), (res.y*.210), ARGB(225, 225, 175, 0))
-    DrawText(tostring("               Cleaned up code and added new draw to updater."), res.y*.015, (res.x/2.65), (res.y*.225), ARGB(255, 255, 255, 255))
-    DrawText(tostring("Ver 0.05"), res.y*.015, (res.x/2.65), (res.y*.240), ARGB(225, 225, 175, 0))
-    DrawText(tostring("               All champs and skins now added including chroma packs!"), res.y*.015, (res.x/2.65), (res.y*.255), ARGB(255, 255, 255, 255))
+    DrawText(tostring("Ver 0.10:"), res.y*.015, (res.x/2.65), (res.y*.210), ARGB(225, 225, 175, 0))
+    DrawText(tostring("               Added Auto-leveling spells(disabled by default) more code cleanup."), res.y*.015, (res.x/2.65), (res.y*.225), ARGB(255, 255, 255, 255))
+    DrawText(tostring("Ver 0.06"), res.y*.015, (res.x/2.65), (res.y*.240), ARGB(225, 225, 175, 0))
+    DrawText(tostring("               Cleaned up code and added new draw to updater."), res.y*.015, (res.x/2.65), (res.y*.255), ARGB(255, 255, 255, 255))
     DrawText(tostring(""), res.y*.015, (res.x/2.65), (res.y*.270), ARGB(255, 255, 255, 255))
     DrawText(tostring("              ())__CRAYON___)) >"), res.y*.015, (res.x/2.65), (res.y*.285), ARGB(255, 255, 255, 255))
     DrawText(tostring(""), res.y*.015, (res.x/2.65), (res.y*.300), ARGB(255, 255, 255, 255))
@@ -561,7 +621,6 @@ local w, h1, h2, size = (res.x*0.70), (res.y*.15), (res.y*.9), res.y*.02
   end
 end)
 
-local res = GetResolution()
 OnWndMsg (function(a, b)
   if PopUp1 then
     if a == WM_LBUTTONDOWN then
