@@ -372,7 +372,7 @@ function ScriptUpdate:print(str)
     print('<font color="#FFFFFF">'..os.clock()..': '..str)
 end
 
-function DrawLines(t,w,c)
+function DrawLines2(t,w,c)
   for i=1, #t-1 do
     DrawLine(t[i].x, t[i].y, t[i+1].x, t[i+1].y, w, c)
   end
@@ -392,7 +392,7 @@ function ScriptUpdate:OnDraw()
     end
     local percent = 1 - xOff / 470
     DrawLine(bP.x2 + xOff, bP.y1 + 20, bP.x2, bP.y1 + 20, 20, ARGB(255, 255 * percent, 255 - (255 * percent), 0))
-    DrawLines({{x=bP.x1, y=bP.y1}, {x=bP.x2, y=bP.y1}, {x=bP.x2, y=bP.y2}, {x=bP.x1, y=bP.y2}, {x=bP.x1, y=bP.y1}, }, 3, ARGB(255, 0x0A, 0x0A, 0x0A))
+    DrawLines2({{x=bP.x1, y=bP.y1}, {x=bP.x2, y=bP.y1}, {x=bP.x2, y=bP.y2}, {x=bP.x1, y=bP.y2}, {x=bP.x1, y=bP.y1}, }, 3, ARGB(255, 0x0A, 0x0A, 0x0A))
     DrawText(text, 16, res.x - (res.x - 205) - (GetTextArea(text, 16).x / 2), bP.y1 + 1, ARGB(255,10,10,10))
   end
 end
