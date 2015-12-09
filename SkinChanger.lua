@@ -13,7 +13,7 @@ local skinMeta = {
 ["Ashe"]         = {"Classic", "Freljord", "Sherwood Forest", "Woad", "Queen", "Amethyst", "Heartseeker", "Marauder"},
 ["Azir"]         = {"Classic", "Galactic", "Gravelord"},
   -- B  
-["Bard"]         = {"Classic", "Elderwood", "Chroma Pack: Marigold", "Chroma Pack: Ivy", "Chroma Pack: Sage"},
+["Bard"]         = {"Classic", "Elderwood", "Chroma Pack: Marigold", "Chroma Pack: Ivy", "Chroma Pack: Sage", "Snow Day"},
 ["Blitzcrank"]   = {"Classic", "Rusty", "Goalkeeper", "Boom Boom", "Piltover Customs", "Definitely Not", "iBlitzcrank", "Riot", "Chroma Pack: Molten", "Chroma Pack: Cobalt", "Chroma Pack: Gunmetal", "Battle Boss"},
 ["Brand"]        = {"Classic", "Apocalyptic", "Vandal", "Cryocore", "Zombie", "Spirit Fire"},
 ["Braum"]        = {"Classic", "Dragonslayer", "El Tigre", "Lionheart"},
@@ -40,7 +40,7 @@ local skinMeta = {
 ["Galio"]        = {"Classic", "Enchanted", "Hextech", "Commando", "Gatekeeper", "Debonair"},
 ["Gangplank"]    = {"Classic", "Spooky", "Minuteman", "Sailor", "Toy Soldier", "Special Forces", "Sultan", "Captain"},
 ["Garen"]        = {"Classic", "Sanguine", "Desert Trooper", "Commando", "Dreadknight", "Rugged", "Steel Legion", "Chroma Pack: Garnet", "Chroma Pack: Plum", "Chroma Pack: Ivory", "Rogue Admiral"},
-["Gnar"]         = {"Classic", "Dino", "Gentleman"},
+["Gnar"]         = {"Classic", "Dino", "Gentleman", "Snow Day"},
 ["Gragas"]       = {"Classic", "Scuba", "Hillbilly", "Santa", "Gragas, Esq.", "Vandal", "Oktoberfest", "Superfan", "Fnatic", "Caskbreaker"},
 ["Graves"]       = {"Classic", "Hired Gun", "Jailbreak", "Mafia", "Riot", "Pool Party", "Cutthroat"},
   -- H 
@@ -117,7 +117,7 @@ local skinMeta = {
 ["Sona"]         = {"Classic", "Muse", "Pentakill", "Silent Night", "Guqin", "Arcade", "DJ"},
 ["Soraka"]       = {"Classic", "Dryad", "Divine", "Celestine", "Reaper", "Order of the Banana"},
 ["Swain"]        = {"Classic", "Northern Front", "Bilgewater", "Tyrant"},
-["Syndra"]       = {"Classic", "Justicar", "Atlantean", "Queen of Diamonds"},
+["Syndra"]       = {"Classic", "Justicar", "Atlantean", "Queen of Diamonds", "Snow Day"},
   -- T 
 ["TahmKench"]    = {"Classic", "Master Chef"},
 ["Talon"]        = {"Classic", "Renegade", "Crimson Elite", "Dragonblade", "SSW"},
@@ -568,7 +568,7 @@ if mySavedShit == 1 then
 end
 
 local ToUpdate = {}
-    ToUpdate.Version = 0.10
+    ToUpdate.Version = 0.11
     ToUpdate.UseHttps = true
     ToUpdate.Host = "raw.githubusercontent.com"
     ToUpdate.VersionPath = "/Icesythe7/GOS/master/SkinChanger.Version"
@@ -600,10 +600,10 @@ local w, h1, h2, size = (res.x*0.70), (res.y*.15), (res.y*.9), res.y*.02
     DrawLine(w, h1/1.05, w, h2/1.97, w/1.75, ARGB(120,205,0,0))
     DrawLine(w, h1, w, h2/1.97, w/1.75, ARGB(120,50,0,0))
     DrawText(tostring("SkinChanger Changelog"), res.y * .028, (res.x/2.4), (res.y*.18), ARGB(255, 0 , 255, 255))
-    DrawText(tostring("Ver 0.10:"), res.y*.015, (res.x/2.65), (res.y*.210), ARGB(225, 225, 175, 0))
-    DrawText(tostring("               Added Auto-leveling spells(disabled by default) more code cleanup."), res.y*.015, (res.x/2.65), (res.y*.225), ARGB(255, 255, 255, 255))
-    DrawText(tostring("Ver 0.06"), res.y*.015, (res.x/2.65), (res.y*.240), ARGB(225, 225, 175, 0))
-    DrawText(tostring("               Cleaned up code and added new draw to updater."), res.y*.015, (res.x/2.65), (res.y*.255), ARGB(255, 255, 255, 255))
+    DrawText(tostring("Ver 0.11:"), res.y*.015, (res.x/2.65), (res.y*.210), ARGB(225, 225, 175, 0))
+    DrawText(tostring("               Added Snow Day Syndra, Gnar, and Bard."), res.y*.015, (res.x/2.65), (res.y*.225), ARGB(255, 255, 255, 255))
+    DrawText(tostring("Ver 0.10"), res.y*.015, (res.x/2.65), (res.y*.240), ARGB(225, 225, 175, 0))
+    DrawText(tostring("               Added Auto-leveling spells(disabled by default) more code cleanup."), res.y*.015, (res.x/2.65), (res.y*.255), ARGB(255, 255, 255, 255))
     DrawText(tostring(""), res.y*.015, (res.x/2.65), (res.y*.270), ARGB(255, 255, 255, 255))
     DrawText(tostring("              ())__CRAYON___)) >"), res.y*.015, (res.x/2.65), (res.y*.285), ARGB(255, 255, 255, 255))
     DrawText(tostring(""), res.y*.015, (res.x/2.65), (res.y*.300), ARGB(255, 255, 255, 255))
