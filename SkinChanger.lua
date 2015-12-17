@@ -159,26 +159,218 @@ local skinMeta = {
 
 }
 
+local ChampionModels = {
+  
+  ["Champs"] = {
+    
+    "Disabled", 
+    "Big Gnar", 
+    "Spider Elise", 
+    "Egg Anivia", 
+    "Raven Swain", 
+    "Cougar Nidalee", 
+    "Quinn\'s Valor", 
+    "Zed\'s Shadow",
+    'Annie\'s Tibbers', 
+    'Azir\'s Soldier', 
+    'Bard\'s Follower', 
+    'Azir\'s Ultimate Soldier', 
+    'Caitlyn\'s Trap', 
+    'Jinx\'s Mine', 
+    'Heimer\'s Tower (Big)', 
+    'Heimer\'s Tower (Small)', 
+    'Elise\'s Spiderling', 
+    'Olaf\'s Axe', 
+    'Orianna\'s Ball', 
+    'Swain\'s Beam', 
+    'Shaco\'s Box', 
+    'Teemo\'s Mushroom', 
+    },
+
+  ["Champs2"] = {
+
+    "Disabled",
+    'Poro', 
+    'King Poro', 
+    'Cupcake', 
+    'Little Dragon', 
+    'Fairy', 
+    'Kitty', 
+    'Ladybug', 
+    'Snowman', 
+    'Squill', 
+    'Dragonfly',  
+    'Tree', 
+    'Urf', 
+    'Duck', 
+    'Ghost Ward', 
+    'Sight Ward', 
+    'Vision Ward', 
+    'Void Spawn', 
+    'Blue Trinket', 
+    'Yellow Trinket',
+    },
+
+  ["Champs3"] = {
+
+    "Disabled",
+    'Baron', 
+    'Dragon', 
+    'Blue Buff', 
+    'Red Buff', 
+    'Crab', 
+    'Gromp', 
+    'Mini Krug', 
+    'Murkwolf', 
+    'Razorbeak', 
+    'Cyan Golem', 
+    'Baron (Old)', 
+    'Dragon (Old)', 
+    'Blue Buff (Old)', 
+    'Red Buff (Old)', 
+    'Golem (Old)', 
+    'Lizard (Old)', 
+    'Young Lizard (Old)', 
+    'Great Wraith (Old)', 
+    'Wraith (Old)', 
+    'Lesser Wraith (Old)', 
+    'Giant Wolf (Old)', 
+    'Wolf (Old)', 
+    'Small Wolf (Old)', 
+
+    },
+
+  ["Champs4"] = {
+
+    "Disabled",
+    'Shopkeeper',
+    'Spooky Shopkeeper', 
+    'Turret', 
+    'Turret (Old)', 
+    'Huge Rock Saw', 
+    'Shield Relic', 
+    'Flag', 
+
+    },
+
+}
+
+local ChampionModelsV = {
+  
+[1] = GetObjectName(myHero),
+[2] = "GnarBig", 
+[3] = "EliseSpider",
+[4] = "AniviaEgg",
+[5] = "SwainRaven",
+[6] = "Nidalee_Cougar",
+[7] = "QuinnValor",
+[8] = "ZedShadow",
+[9] = 'AnnieTibbers',
+[10] = 'AzirSoldier',
+[11] = 'BardFollower',
+[12] = 'AzirUltSoldier',
+[13] = 'CaitlynTrap',
+[14] = 'JinxMine',
+[15] = 'HeimerTBlue',
+[16] = 'HeimerTYellow',
+[17] = 'EliseSpiderling',
+[18] = 'OlafAxe',
+[19] = 'OriannaBall',
+[20] = 'SwainBeam',
+[21] = 'ShacoBox',
+[22] = 'TeemoMushroom', 
+
+}
+
+local ChampionModelsV2 = {
+  
+[1] = GetObjectName(myHero),
+[2] = 'HA_AP_Poro',
+[3] = 'KingPoro',
+[4] = 'LuluCupcake',
+[5] = 'LuluDragon',
+[6] = 'LuluFaerie',
+[7] = "LuluKitty",
+[8] = "LuluLadybug",
+[9] = 'LuluSnowman',
+[10] = 'LuluSquill',
+[11] = 'Sru_Dragonfly',
+[12] = 'TT_Tree_A',
+[13] = 'Urf',
+[14] = 'Sru_Duckie',
+[15] = 'GhostWard',
+[16] = 'SightWard',
+[17] = 'VisionWard',
+[18] = 'VoidSpawn',
+[19] = 'BlueTrinket',
+[20] = 'YellowTrinket',  
+
+}
+
+local ChampionModelsV3 = {
+  
+[1] = GetObjectName(myHero),
+[2] = "SRU_Baron", 
+[3] = "SRU_Dragon",
+[4] = "SRU_Blue",
+[5] = "SRU_Red",
+[6] = "Sru_Crab",
+[7] = "SRU_Gromp",
+[8] = "SRU_KrugMini",
+[9] = 'SRU_Murkwolf',
+[10] = 'SRU_Razorbeak',
+[11] = 'TT_NGolem',
+[12] = 'Worm',
+[13] = 'Dragon',
+[14] = 'AncientGolem',
+[15] = 'LizardElder',
+[16] = 'Golem',
+[17] = 'Lizard',
+[18] = 'YoungLizard',
+[19] = 'GreatWraith',
+[20] = 'TT_NWraith',
+[21] = 'LesserWraith',
+[22] = 'GiantWolf', 
+[23] = 'TT_NWolf',
+[24] = 'wolf', 
+
+}
+
+local ChampionModelsV4 = {
+  
+[1] = GetObjectName(myHero),
+[2] = "ShopMale", 
+[3] = "TT_Shopkeeper",
+[4] = "TT_ChaosTurret1",
+[5] = "ChaosTurretWorm",
+[6] = "OdinRockSaw",
+[7] = "OdinShieldRelic",
+[8] = "SummonerBeacon", 
+
+}
+
 local SkinObjects = {
 
-["Orianna"]      = {"TheDoomBall"},
-["Elise"]        = {"Spiderling"},
-["Zac"]          = {"RebirthBlob"},
-["Heimerdinger"] = {"H-28G Evolution Turret"},
-["Teemo"]        = {"Noxious Trap"},
 ["Annie"]        = {"Tibbers"},
-["Maokai"]       = {"DoABarrelRoll"},
+["Elise"]        = {"Spiderling"},
+["Heimerdinger"] = {"H-28G Evolution Turret"},
+["Illaoi"]       = {"God"},
 ["JarvanIV"]     = {"Beacon", "JarvanIVWall"},
+["Kalista"]      = {"RobotBuddy"},
 ["Malzahar"]     = {"Portal to the Void", "Voidling"},
-["Shaco"]        = {"Jack In The Box"},
-["Olaf"]         = {"HiddenMinion"},
+["Maokai"]       = {"DoABarrelRoll"},
 ["Nidalee"]      = {"Noxious Trap"},
+["Olaf"]         = {"HiddenMinion"},
+["Orianna"]      = {"TheDoomBall"},
+["Shaco"]        = {"Jack In The Box"},
+["Teemo"]        = {"Noxious Trap"},
+--["Zac"]          = {"BlobDrop"},
 
 }
 
 local menuTable = {
 
-["Orders"] = {"Disabled","QWE","QEW","WQE","WEQ","EQW","EWQ"}
+["Orders"] = {"Disabled","Q > W > E","Q > E > W","W > Q > E","W > E > Q","E > Q > W","E > W > Q"}
 
 }
 
@@ -197,21 +389,39 @@ local orderTable = {
 local orderChat = {
   
 [1] = "Disabled",
-[2] = "QWE", 
-[3] = "QEW",
-[4] = "WQE",
-[5] = "WEQ",
-[6] = "EQW",
-[7] = "EWQ",
+[2] = "Q > W > E", 
+[3] = "Q > E > W",
+[4] = "W > Q > E",
+[5] = "W > E > Q",
+[6] = "E > Q > W",
+[7] = "E > W > Q",
 
 }
+
+OnCreateObj (function(object)
+  DelayAction (function(object)
+    if SkinObjects[GetObjectName(GetMyHero())] then
+      for _, name in pairs (SkinObjects[GetObjectName(GetMyHero())]) do
+        if (GetObjectBaseName(object) == name) then
+            ModelChanger(object, Config.skin:Value() - 1, GetObjectModelName(object))
+        end
+      end
+    end
+    if GetObjectBaseName(object) == "VisionWard" then
+        ModelChanger(object, Config.ward:Value(), GetObjectModelName(object))
+    end
+    if GetObjectBaseName(object) == "SightWard" then
+        ModelChanger(object, Config.ward:Value(), GetObjectModelName(object))
+    end
+  end, 0, {object})
+end)
 
 local res = GetResolution()
 local myHero = GetMyHero()
 local globalTick = 0
 
 OnTick (function() 
-  GetskilllvlUp  = (GetCastLevel(myHero,_Q) + GetCastLevel(myHero,_W) + GetCastLevel(myHero,_E) + GetCastLevel(myHero,_R) + 1)
+  GetskilllvlUp  = (GetLevel(myHero) - (GetLevelPoints(myHero)-1))
   GetskilllvlUp2 = (GetskilllvlUp - 1)
   if GetskilllvlUp > GetLevel(myHero) then
     GetskilllvlUp = (GetskilllvlUp - 1)
@@ -222,7 +432,6 @@ OnTick (function()
   else 
     canlvlSpell = false
   end
-
   if Config.levelorder:Value() ~= 1 and canlvlSpell then
     local Ticker = GetTickCount()
     if (globalTick + math.random(300,1000)) < Ticker then
@@ -312,10 +521,24 @@ OnDraw(function()
     end
 end)
 
-Config = Menu("SkinChanger & Auto-leveler", "Skinchanger")
-Config:DropDown('skin', GetObjectName(myHero), 0, skinMeta[GetObjectName(myHero)], HeroSkinChanger, true)
+Config = Menu("Skin Changer & Auto-leveler", "Skinchanger")
+Config:DropDown('skin', GetObjectName(myHero).. " Skins", 0, skinMeta[GetObjectName(myHero)], HeroSkinChanger, true)
 Config.skin:Value(0)
 Config.skin.callback = function(model) HeroSkinChanger(GetMyHero(), model - 1) displayBubble(2, {skinMeta[GetObjectName(myHero)][model] .." ".. GetObjectName(myHero) .. " Loaded!"}) end
+Config:Slider("ward", "Ward Skins", 0, 0, 52, 1)
+Config:Menu("sec", "Models")
+Config.sec:DropDown("Models", "Champion Models", 1, ChampionModels["Champs"], ModelChanger, true)
+Config.sec.Models:Value(1)
+Config.sec.Models.callback = function(model) ModelChanger(GetMyHero(), 0, ChampionModelsV[model]) displayBubble(2, {"Model: " .. ChampionModelsV[model] .." Loaded!"}) end
+Config.sec:DropDown("Models2", "Champion Models 2", 1, ChampionModels["Champs2"], ModelChanger, true)
+Config.sec.Models2:Value(1)
+Config.sec.Models2.callback = function(model) ModelChanger(GetMyHero(), 0, ChampionModelsV2[model]) displayBubble(2, {"Model: " .. ChampionModelsV2[model] .." Loaded!"}) end
+Config.sec:DropDown("Models3", "Champion Models 3", 1, ChampionModels["Champs3"], ModelChanger, true)
+Config.sec.Models3:Value(1)
+Config.sec.Models3.callback = function(model) ModelChanger(GetMyHero(), 0, ChampionModelsV3[model]) displayBubble(2, {"Model: " .. ChampionModelsV3[model] .." Loaded!"}) end
+Config.sec:DropDown("Models4", "Champion Models 4", 1, ChampionModels["Champs4"], ModelChanger, true)
+Config.sec.Models4:Value(1)
+Config.sec.Models4.callback = function(model) ModelChanger(GetMyHero(), 0, ChampionModelsV4[model]) displayBubble(2, {"Model: " .. ChampionModelsV4[model] .." Loaded!"}) end
 Config:DropDown("levelorder", "Level Order", 1, menuTable["Orders"], LevelSpell, true)
 Config.levelorder:Value(1)
 Config.levelorder.callback = function(order) levelspellorder = orderTable[order] displayBubble(2, {"Auto-leveling spells in order " .. orderChat[order] .. "."}) end
@@ -568,7 +791,7 @@ if mySavedShit == 1 then
 end
 
 local ToUpdate = {}
-    ToUpdate.Version = 0.11
+    ToUpdate.Version = 0.12
     ToUpdate.UseHttps = true
     ToUpdate.Host = "raw.githubusercontent.com"
     ToUpdate.VersionPath = "/Icesythe7/GOS/master/SkinChanger.Version"
@@ -580,38 +803,27 @@ local ToUpdate = {}
     ToUpdate.CallbackError = function(NewVersion) displayBubble(2, {"SkinChanger: Error while Downloading. Please try again.  "}) end
     ScriptUpdate(ToUpdate.Version,ToUpdate.UseHttps, ToUpdate.Host, ToUpdate.VersionPath, ToUpdate.ScriptPath, ToUpdate.SavePath, ToUpdate.CallbackUpdate,ToUpdate.CallbackNoUpdate, ToUpdate.CallbackNewVersion,ToUpdate.CallbackError)
 
- 
---[[
-OnCreateObj (function(Object)
-  if SkinObjects[GetObjectName(myHero)] then
-    for _, name in pairs (SkinObjects[GetObjectName(myHero)]) do
-      if (GetObjectBaseName(Object) == name) then
-        PrintChat(name)
-        HeroSkinChanger(Object, 6)
-      end
-    end
-  end
-end)
-]]
 
 OnDraw (function()
+--print("Base Name " .. GetObjectBaseName(GetGameTarget()) .. " > Model Name " .. GetObjectModelName(GetGameTarget()))
+--ModelChanger(GetGameTarget(), 1, GetObjectModelName(GetGameTarget()))
   if PopUp1 then
 local w, h1, h2, size = (res.x*0.70), (res.y*.15), (res.y*.9), res.y*.02
     DrawLine(w, h1/1.05, w, h2/1.97, w/1.75, ARGB(120,205,0,0))
     DrawLine(w, h1, w, h2/1.97, w/1.75, ARGB(120,50,0,0))
     DrawText(tostring("SkinChanger Changelog"), res.y * .028, (res.x/2.4), (res.y*.18), ARGB(255, 0 , 255, 255))
-    DrawText(tostring("Ver 0.11:"), res.y*.015, (res.x/2.65), (res.y*.210), ARGB(225, 225, 175, 0))
-    DrawText(tostring("               Added Snow Day Syndra, Gnar, and Bard."), res.y*.015, (res.x/2.65), (res.y*.225), ARGB(255, 255, 255, 255))
-    DrawText(tostring("Ver 0.10"), res.y*.015, (res.x/2.65), (res.y*.240), ARGB(225, 225, 175, 0))
-    DrawText(tostring("               Added Auto-leveling spells(disabled by default) more code cleanup."), res.y*.015, (res.x/2.65), (res.y*.255), ARGB(255, 255, 255, 255))
+    DrawText(tostring("Ver 0.12:"), res.y*.015, (res.x/2.65), (res.y*.210), ARGB(225, 225, 175, 0))
+    DrawText(tostring("               Added warding skins and models, also added a few(not all) of the objects, more to come."), res.y*.015, (res.x/2.65), (res.y*.225), ARGB(255, 255, 255, 255))
+    DrawText(tostring("Ver 0.11"), res.y*.015, (res.x/2.65), (res.y*.240), ARGB(225, 225, 175, 0))
+    DrawText(tostring("               Added Snow Day Syndra, Gnar, and Bard."), res.y*.015, (res.x/2.65), (res.y*.255), ARGB(255, 255, 255, 255))
     DrawText(tostring(""), res.y*.015, (res.x/2.65), (res.y*.270), ARGB(255, 255, 255, 255))
     DrawText(tostring("              ())__CRAYON___)) >"), res.y*.015, (res.x/2.65), (res.y*.285), ARGB(255, 255, 255, 255))
     DrawText(tostring(""), res.y*.015, (res.x/2.65), (res.y*.300), ARGB(255, 255, 255, 255))
     DrawText(tostring("TODO:"), res.y*.015, (res.x/2.65), (res.y*.315), ARGB(225, 225, 175, 0))
     DrawText(tostring("             Fix form changing champs."), res.y*.015, (res.x/2.65), (res.y*.330), ARGB(255, 255, 255, 255))
-    DrawText(tostring("             Add ward skins?"), res.y*.015, (res.x/2.65), (res.y*.345), ARGB(255, 255, 255, 255))
-    DrawText(tostring("             Skin Objects."), res.y*.015, (res.x/2.65), (res.y*.360), ARGB(255, 255, 255, 255))
-    DrawText(tostring("             Particles?"), res.y*.015, (res.x/2.65), (res.y*.375), ARGB(255, 255, 255, 255))
+    DrawText(tostring("             Add Rest of the objects."), res.y*.015, (res.x/2.65), (res.y*.345), ARGB(255, 255, 255, 255))
+    DrawText(tostring("             Particles."), res.y*.015, (res.x/2.65), (res.y*.360), ARGB(255, 255, 255, 255))
+    DrawText(tostring("             Suggestions?"), res.y*.015, (res.x/2.65), (res.y*.375), ARGB(255, 255, 255, 255))
     local w1, w2, h1, h2 = (res.x/2)-50, (res.x/2)+50, (res.y*.70), (res.y*.75)
     DrawLine(w1, h1/1.775, w2, h1/1.775, 50, ARGB(122, 255, 0, 255)) 
     --DrawLine(w*.98, h1*.98, w*.98, h2*.98, w*.1*.98, ARGB(205,255,255,255))
