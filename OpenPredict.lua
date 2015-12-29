@@ -30,20 +30,6 @@
     GetConicAOEPrediction(unit, spellData, [sourcePos])
 ]]
 
-local ToUpdate = {}
-ToUpdate.Version = 0.01
-ToUpdate.UseHttps = true
-ToUpdate.Host = "raw.githubusercontent.com"
-ToUpdate.VersionPath = "/Jo7j/GoS/master/OpenPredict/OpenPredict.version"
-ToUpdate.ScriptPath =  "/Icesythe7/GOS/master/OpenPredict.lua"
-ToUpdate.SavePath = COMMON_PATH.."/OpenPredict.lua"
-ToUpdate.CallbackUpdate = function(NewVersion,OldVersion) PrintChat("<font color='#FFFFFF'>[OpenPredict]: </font><font color='#00FFFF'> Updated to ("..NewVersion..") Please Reload with 2x F6.</font>") end
-ToUpdate.CallbackNoUpdate = function(OldVersion) PrintChat("<font color='#FFFFFF'>[OpenPredict]: </font><font color='#00FFFF'> No Updates Found! Version " ..ToUpdate.Version.. " Loaded!</font>") end
-ToUpdate.CallbackNewVersion = function(NewVersion) PrintChat("<font color='#FFFFFF'>[OpenPredict]: </font><font color='#00FFFF'> New Version found ("..NewVersion.."). Please wait until its downloaded</font>") end
-ToUpdate.CallbackError = function(NewVersion) PrintChat("<font color='#FFFFFF'>[OpenPredict]: </font><font color='#00FFFF'> Error while Downloading. Please try again.</font>") end
-ScriptUpdate(ToUpdate.Version,ToUpdate.UseHttps, ToUpdate.Host, ToUpdate.VersionPath, ToUpdate.ScriptPath, ToUpdate.SavePath, ToUpdate.CallbackUpdate,ToUpdate.CallbackNoUpdate, ToUpdate.CallbackNewVersion,ToUpdate.CallbackError)
-
-
 -- Simple prerequisite
 if _G.OpenPredict_Loaded then return end
 
@@ -591,7 +577,7 @@ IsAttacking = function(unit)
 end
 
 IsImmobile = function(unit)
-	local nID = GetNetworkID(unit)
+  local nID = GetNetworkID(unit)
 
   if activeImmobility[nID] then
     return GetGameTimer() < activeImmobility[nID].ExpireTime, activeImmobility[nID].ExpireTime - GetGameTimer()
@@ -663,6 +649,36 @@ _G.OnProcessSpellAttack(OnProcessSpellAttack)
 
 _G.OpenPredict_Loaded = true
 
+local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+
+function Base64Encode(data)
+  return ((data:gsub('.', function(x)
+  local r,b='',x:byte()
+  for i=8,1,-1 do r=r..(b%2^i-b%2^(i-1)>0 and '1' or '0') end
+  return r;
+  end)..'0000'):gsub('%d%d%d?%d?%d?%d?', function(x)
+  if (#x < 6) then return '' end
+  local c=0
+  for i=1,6 do c=c+(x:sub(i,i)=='1' and 2^(6-i) or 0) end
+  return b:sub(c+1,c+1)
+  end)..({ '', '==', '=' })[#data%3+1])
+end
+
+function Base64Decode(data)
+  data = string.gsub(data, '[^'..b..'=]', '')
+  return (data:gsub('.', function(x)
+  if (x == '=') then return '' end
+  local r,f='',(b:find(x)-1)
+  for i=6,1,-1 do r=r..(f%2^i-f%2^(i-1)>0 and '1' or '0') end
+  return r;
+  end):gsub('%d%d%d?%d?%d?%d?%d?%d?', function(x)
+  if (#x ~= 8) then return '' end
+  local c=0
+  for i=1,8 do c=c+(x:sub(i,i)=='1' and 2^(8-i) or 0) end
+  return string.char(c)
+  end))
+end
+
 class "ScriptUpdate"
 function ScriptUpdate:__init(LocalVersion,UseHttps, Host, VersionPath, ScriptPath, SavePath, CallbackUpdate, CallbackNoUpdate, CallbackNewVersion,CallbackError)
   self.LocalVersion = LocalVersion
@@ -691,6 +707,7 @@ function DrawLines2(t,w,c)
 end
 
 function ScriptUpdate:OnDraw()
+  local res = GetResolution()
   if self.DownloadStatus ~= 'Downloading Script (100%)' and self.DownloadStatus ~= 'Downloading VersionInfo (100%)'then
     local bP = {['x1'] = res.x - (res.x - 390),['x2'] = res.x - (res.x - 20),['y1'] = res.y / 2,['y2'] = (res.y / 2) + 20,}
     local text = 'Download Status: '..(self.DownloadStatus or 'Unknown')
@@ -866,3 +883,16 @@ function ScriptUpdate:DownloadUpdate()
     self.GotScriptUpdate = true
   end
 end
+
+local ToUpdate = {}
+ToUpdate.Version = 0.01
+ToUpdate.UseHttps = true
+ToUpdate.Host = "raw.githubusercontent.com"
+ToUpdate.VersionPath = "/Jo7j/GoS/master/OpenPredict/OpenPredict.version"
+ToUpdate.ScriptPath =  "/Icesythe7/GOS/master/OpenPredict.lua"
+ToUpdate.SavePath = COMMON_PATH.."/OpenPredict.lua"
+ToUpdate.CallbackUpdate = function(NewVersion,OldVersion) PrintChat("<font color='#FFFFFF'>[OpenPredict]: </font><font color='#00FFFF'> Updated to ("..NewVersion..") Please Reload with 2x F6.</font>") end
+ToUpdate.CallbackNoUpdate = function(OldVersion) PrintChat("<font color='#FFFFFF'>[OpenPredict]: </font><font color='#00FFFF'> No Updates Found! Version " ..ToUpdate.Version.. " Loaded!</font>") end
+ToUpdate.CallbackNewVersion = function(NewVersion) PrintChat("<font color='#FFFFFF'>[OpenPredict]: </font><font color='#00FFFF'> New Version found ("..NewVersion.."). Please wait until its downloaded</font>") end
+ToUpdate.CallbackError = function(NewVersion) PrintChat("<font color='#FFFFFF'>[OpenPredict]: </font><font color='#00FFFF'> Error while Downloading. Please try again.</font>") end
+ScriptUpdate(ToUpdate.Version,ToUpdate.UseHttps, ToUpdate.Host, ToUpdate.VersionPath, ToUpdate.ScriptPath, ToUpdate.SavePath, ToUpdate.CallbackUpdate,ToUpdate.CallbackNoUpdate, ToUpdate.CallbackNewVersion,ToUpdate.CallbackError)
