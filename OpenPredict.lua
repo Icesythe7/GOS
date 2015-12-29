@@ -691,6 +691,41 @@ function Base64Decode(data)
   end))
 end
 
+function math.round(num, idp)
+  assert(type(num) == "number", "math.round: wrong argument types (<number> expected for num)")
+  assert(type(idp) == "number" or idp == nil, "math.round: wrong argument types (<integer> expected for idp)")
+  local mult = 10 ^ (idp or 0)
+  if num >= 0 then return math.floor(num * mult + 0.5) / mult
+  else return math.ceil(num * mult - 0.5) / mult
+  end
+end
+
+function string.split(str, delim, maxNb)
+  -- Eliminate bad cases...
+  if not delim or delim == "" or string.find(str, delim) == nil then
+    return { str }
+  end
+  maxNb = (maxNb and maxNb >= 1) and maxNb or 0
+  local result = {}
+  local pat = "(.-)" .. delim .. "()"
+  local nb = 0
+  local lastPos
+  for part, pos in string.gmatch(str, pat) do
+    nb = nb + 1
+    if nb == maxNb then
+      result[nb] = lastPos and string.sub(str, lastPos, #str) or str
+      break
+    end
+    result[nb] = part
+    lastPos = pos
+  end
+  -- Handle the last field
+  if nb ~= maxNb then
+    result[nb + 1] = string.sub(str, lastPos)
+  end
+  return result
+end
+
 class "ScriptUpdate"
 function ScriptUpdate:__init(LocalVersion,UseHttps, Host, VersionPath, ScriptPath, SavePath, CallbackUpdate, CallbackNoUpdate, CallbackNewVersion,CallbackError)
   self.LocalVersion = LocalVersion
@@ -702,10 +737,10 @@ function ScriptUpdate:__init(LocalVersion,UseHttps, Host, VersionPath, ScriptPat
   self.CallbackNoUpdate = CallbackNoUpdate
   self.CallbackNewVersion = CallbackNewVersion
   self.CallbackError = CallbackError
-  Callback.Add("Draw", function() self:OnDraw() end)
+  OnDraw(function() self:OnDraw() end)
   self:CreateSocket(self.VersionPath)
   self.DownloadStatus = 'Connecting to Server for VersionInfo'
-  Callback.Add("Tick", function() self:GetOnlineVersion() end)
+  OnTick(function() self:GetOnlineVersion() end)
 end
 
 function ScriptUpdate:print(str)
