@@ -700,29 +700,9 @@ function ScriptUpdate:print(str)
   print('<font color="#FFFFFF">'..os.clock()..': '..str)
 end
 
-function DrawLines2(t,w,c)
-  for i=1, #t-1 do
-    DrawLine(t[i].x, t[i].y, t[i+1].x, t[i+1].y, w, c)
-  end
-end
-
 function ScriptUpdate:OnDraw()
-  local res = GetResolution()
   if self.DownloadStatus ~= 'Downloading Script (100%)' and self.DownloadStatus ~= 'Downloading VersionInfo (100%)'then
-    local bP = {['x1'] = res.x - (res.x - 390),['x2'] = res.x - (res.x - 20),['y1'] = res.y / 2,['y2'] = (res.y / 2) + 20,}
-    local text = 'Download Status: '..(self.DownloadStatus or 'Unknown')
-    DrawLine(bP.x1, bP.y1 + 20, bP.x2,  bP.y1 + 20, 20, ARGB(125, 255, 255, 255))
-    local xOff
-    if self.File and self.Size then
-      local c = math.round(100/self.Size*self.File:len(),2)/100
-      xOff = c < 1 and math.ceil(370 * c) or 370
-    else
-      xOff = 1
-    end
-    local percent = 1 - xOff / 470
-    DrawLine(bP.x2 + xOff, bP.y1 + 20, bP.x2, bP.y1 + 20, 20, ARGB(255, 255 * percent, 255 - (255 * percent), 0))
-    DrawLines2({{x=bP.x1, y=bP.y1}, {x=bP.x2, y=bP.y1}, {x=bP.x2, y=bP.y2}, {x=bP.x1, y=bP.y2}, {x=bP.x1, y=bP.y1}, }, 3, ARGB(255, 0x0A, 0x0A, 0x0A))
-    DrawText(text, 16, res.x - (res.x - 205) - (GetTextArea(text, 16).x / 2), bP.y1 + 1, ARGB(255,10,10,10))
+    DrawText('Download Status: '..(self.DownloadStatus or 'Unknown'),50,10,50,ARGB(0xFF,0xFF,0xFF,0xFF))
   end
 end
 
