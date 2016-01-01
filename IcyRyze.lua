@@ -93,8 +93,6 @@ elseif GetCastName(myHero, SUMMONER_2) =="summonerdot" then
 else
   _IGNITE = nil
 end
-PrintChat("<font color='#6f00ff'>[Icy Ryze]:</font> <font color='#FFFFFF'> Icy Ryze Loaded </font>")
-PrintChat("<font color='#ff00ff'>[Icy Ryze]:</font> <font color='#FFFFFF'> Current Version "..ToUpdate.Version.."</font>");
 MenuLoaded = true
 
 
@@ -223,7 +221,7 @@ function KillSteal()
   if ks ~= nil and ValidTarget(ks) and not IsImmune(ks, GetMyHero()) then
     if Menu.KillSteal.UseQ:Value() and Q.ready and GetDamage(_Q,ks) > GetCurrentHP(ks) and GetDistance(ks) < Q.range then
       CastQ(ks)
-    elseif 	Menu.KillSteal.UseW:Value() and W.ready and GetDamage(_W,ks) > GetCurrentHP(ks) and GetDistance(ks) <= W.range then
+    elseif  Menu.KillSteal.UseW:Value() and W.ready and GetDamage(_W,ks) > GetCurrentHP(ks) and GetDistance(ks) <= W.range then
       CastTargetSpell(ks, _W)
     elseif Menu.KillSteal.UseE:Value() and E.ready and GetDamage(_E,ks) > GetCurrentHP(ks) and GetDistance(ks) <= E.range then
       CastTargetSpell(ks, _E)
@@ -428,6 +426,8 @@ end
 end)
 
 AddGapcloseEvent(_W, 600, true, Menu)
+
+local b='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
 function Base64Decode(data)
   data = string.gsub(data, '[^'..b..'=]', '')
