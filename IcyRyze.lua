@@ -13,7 +13,7 @@ require 'DamageLib'
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 local ToUpdate = {}
-ToUpdate.Version = 0.01
+ToUpdate.Version = 0.02
 ToUpdate.UseHttps = true
 ToUpdate.Host = "raw.githubusercontent.com"
 ToUpdate.VersionPath = "/Icesythe7/GOS/master/IcyRyze.version"
@@ -189,9 +189,11 @@ if IOW:Mode() == "Combo" then
   end
   Combo()
 elseif IOW:Mode() == "Harass" and ((GetCurrentMana(GetMyHero()) / GetMaxMana(GetMyHero()) * 100) >= Menu.Harass.mMin:Value()) then
+  IOW.attacksEnabled = true
   Mixed()
 end
 if IOW:Mode() == "LaneClear" then
+  IOW.attacksEnabled = true
   LaneClear()
 end
 KillSteal()
