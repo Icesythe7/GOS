@@ -13,7 +13,7 @@ require 'DamageLib'
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 local ToUpdate = {}
-ToUpdate.Version = 0.02
+ToUpdate.Version = 0.03
 ToUpdate.UseHttps = true
 ToUpdate.Host = "raw.githubusercontent.com"
 ToUpdate.VersionPath = "/Icesythe7/GOS/master/IcyRyze.version"
@@ -211,9 +211,7 @@ end
 function CastQn(unit)
   if unit then
     local pI = GetPrediction(unit, Q)
-    if pI and pI.hitChance >= 0.25 and not pI:mCollision(1) then
-      CastSkillShot(_Q, pI.castPos)
-    end
+    CastSkillShot(_Q, pI.castPos)
   end
 end
 
@@ -240,87 +238,120 @@ function Combo()
   local wSpell = Menu.Combo.useW:Value()
   local rSpell = Menu.Combo.useR:Value()
   local rwwSpell = Menu.Combo.useRww:Value()
+  local target = GetBestTarget(Q.range)
 
-  local target = GetBestTarget(W.range)
-  if not ValidTarget(target,Q.range) then return end
+  if not ValidTarget(target,Q.range) then 
+    return 
+  end
+
   if _IGNITE ~= nil and IgniteReady and ValidTarget(target,590) and GetCurrentHP(target) < GetComboDamage({_W,_IGNITE},target) then
     CastTargetSpell(target, _IGNITE)
   end
+
   if GetDistance(target) <= Q.range then
-    if GetPassiveBuff() <= 2 then
+    if GetPassiveBuff() <= 2 and not R.ready then
       if qSpell and Q.ready then
-        CastQ(target)
+        CastQn(target)
       end
+
       if ValidTarget(target,W.range) and wSpell and W.ready then
         CastTargetSpell(target, _W)
       end
+
       if GetDistance(target) <= E.range and eSpell and E.ready then
         CastTargetSpell(target, _E)
       end
-      if R.ready and rSpell then
-        if GetDistance(target) <= W.range and GetCurrentHP(target) > GetDamage(_Q,target) + GetDamage(_E,target) then
-          if not rwwSpell or (rwwSpell and GotBuff(target, "RyzeW"))  then
-            CastSpell(_R)
-          end
-        end
+
+    end
+
+    if GetPassiveBuff() <= 2 and R.ready then -- placeholder
+if qSpell and Q.ready then
+        CastQn(target)
       end
-    elseif GetPassiveBuff() == 3 then
+
+      if GetDistance(target) <= E.range and eSpell and E.ready then
+        CastTargetSpell(target, _E)
+      end
+    end
+
+    if GetPassiveBuff() == 3 and not R.ready then
+      if ValidTarget(target,W.range) and wSpell and W.ready then
+        CastTargetSpell(target, _W)
+      end
+
       if qSpell and Q.ready then
         CastQn(target)
       end
 
-      if ValidTarget(target,E.range) and eSpell and E.ready then
+      if GetDistance(target) <= E.range and eSpell and E.ready then
         CastTargetSpell(target, _E)
       end
-      if ValidTarget(target,W.range) and wSpell and W.ready then
-        CastTargetSpell(target, _W)
-      end
+    end
+
+    if GetPassiveBuff() == 3 and R.ready then
       if R.ready and rSpell then
-        if GetDistance(target) <= W.range and GetCurrentHP(target) > GetDamage(_Q,target) + GetDamage(_E,target) then
+        if GetDistance(target) <= Q.range and GetCurrentHP(target) > GetDamage(_Q,target) + GetDamage(_E,target) then
           if not rwwSpell or (rwwSpell and GotBuff(target, "RyzeW"))  then
             CastSpell(_R)
           end
         end
       end
-    elseif GetPassiveBuff() == 4 then
-      if ValidTarget(target,W.range) and wSpell and W.ready then
-        CastTargetSpell(target, _W)
-      end
+    end
+
+    if GetPassiveBuff() == 4 and not R.ready then
+
       if qSpell and Q.ready then
         CastQn(target)
       end
 
-      if ValidTarget(target,E.range) and eSpell and E.ready then
-        CastTargetSpell(target, _E)
+      if ValidTarget(target,W.range) and wSpell and W.ready then
+        CastTargetSpell(target, _W)
       end
 
+      if GetDistance(target) <= E.range and eSpell and E.ready then
+        CastTargetSpell(target, _E)
+      end
+    end
+
+    if GetPassiveBuff() == 4 and R.ready then
       if R.ready and rSpell then
-        if GetDistance(target) <= W.range and GetCurrentHP(target) > GetDamage(_Q,target) + GetDamage(_E,target) then
+        if GetDistance(target) <= Q.range and GetCurrentHP(target) > GetDamage(_Q,target) + GetDamage(_E,target) then
           if not rwwSpell or (rwwSpell and GotBuff(target, "RyzeW"))  then
             CastSpell(_R)
           end
         end
       end
     end
-  else
-    if ValidTarget(target,W.range) and wSpell and W.ready then
-      CastTargetSpell(target, _W)
-    end
-    if qSpell and Q.ready and ValidTarget(target,Qn.range)then
-      CastQn(target)
+
+    if Charged == true and not R.ready then
+      if qSpell and Q.ready then
+        CastQn(target)
+      end
+
+      if ValidTarget(target,W.range) and wSpell and W.ready then
+        CastTargetSpell(target, _W)
+      end
+
+      if qSpell and Q.ready then
+        CastQn(target)
+      end
+
+      if GetDistance(target) <= E.range and eSpell and E.ready then
+        CastTargetSpell(target, _E)
+      end
     end
 
-    if ValidTarget(target,E.range) and eSpell and E.ready then
-      CastTargetSpell(target, _E)
+    if Charged == true and R.ready then
+      if R.ready and rSpell then
+        if GetDistance(target) <= Q.range and GetCurrentHP(target) > GetDamage(_Q,target) + GetDamage(_E,target) then
+          if not rwwSpell or (rwwSpell and GotBuff(target, "RyzeW"))  then
+            CastSpell(_R)
+          end
+        end
+      end
     end
-  end
-
-
-  if ValidTarget(target,Q.range) and R.ready and rSpell and GetPassiveBuff() == 4 and not Q.ready and not E.ready and not W.ready then
-    CastSpell(_R)
   end
 end
-
 
 function Mixed()
   local qSpell = Menu.Harass.UseQ:Value()
@@ -367,6 +398,9 @@ function LaneClear()
     end
     if UseW and W.ready and ValidTarget(minion,W.range) then
       CastTargetSpell(minion, _W)
+    end
+    if UseQ and Q.ready and ValidTarget(minion,Q.range) then
+      CastQ(minion)
     end
     if UseE and E.ready and ValidTarget(minion,E.range) then
       CastTargetSpell(minion, _E)
@@ -635,8 +669,8 @@ end
 ScriptUpdate(ToUpdate.Version,ToUpdate.UseHttps, ToUpdate.Host, ToUpdate.VersionPath, ToUpdate.ScriptPath, ToUpdate.SavePath, ToUpdate.CallbackUpdate,ToUpdate.CallbackNoUpdate, ToUpdate.CallbackNewVersion,ToUpdate.CallbackError)
 
 OnUnLoad (function()
-    print("<font color='#eb4d33'>[Icy Ryze]: </font><font color='#FF0000'> Unloaded!</font>")
-  end)
+  print("<font color='#eb4d33'>[Icy Ryze]: </font><font color='#FF0000'> Unloaded!</font>")
+end)
 
 else
   local http = require("socket.http")
