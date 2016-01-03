@@ -13,7 +13,7 @@ require 'DamageLib'
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 local ToUpdate = {}
-ToUpdate.Version = 0.03
+ToUpdate.Version = 0.04
 ToUpdate.UseHttps = true
 ToUpdate.Host = "raw.githubusercontent.com"
 ToUpdate.VersionPath = "/Icesythe7/GOS/master/IcyRyze.version"
@@ -182,7 +182,7 @@ if IsDead(GetMyHero()) or not MenuLoaded then return end
 CheckSpells()
 if IOW:Mode() == "Combo" then
   local qTarget = GetBestTarget(Q.range)
-  if qTarget and (GetDistance(qTarget) > 440 or E.ready or Q.ready) and GetCurrentHP(qTarget) > 3*getdmg('AD',qTarget,GetMyHero()) then
+  if not IsImmune(qTarget, GetMyHero()) and qTarget and (GetDistance(qTarget) > 440 or E.ready or Q.ready) and GetCurrentHP(qTarget) > 3*getdmg('AD',qTarget,GetMyHero()) then
     IOW.attacksEnabled = false
   else
     IOW.attacksEnabled = true
@@ -195,6 +195,9 @@ end
 if IOW:Mode() == "LaneClear" then
   IOW.attacksEnabled = true
   LaneClear()
+end
+if IOW:Mode() == "LastHit" then
+  LastHit()
 end
 KillSteal()
 end)
@@ -229,9 +232,6 @@ function KillSteal()
   end
 end
 
-
-
-
 function Combo()
   local qSpell = Menu.Combo.useQ:Value()
   local eSpell = Menu.Combo.useE:Value()
@@ -264,7 +264,7 @@ function Combo()
 
     end
 
-    if GetPassiveBuff() <= 2 and R.ready then -- placeholder
+    if GetPassiveBuff() <= 2 and R.ready then 
 if qSpell and Q.ready then
         CastQn(target)
       end
@@ -409,6 +409,10 @@ function LaneClear()
       CastSpell(_R)
     end
   end
+end
+
+function LastHit()
+  IOW.attacksEnabled = true
 end
 
 function DrawLines2(t,w,c)
