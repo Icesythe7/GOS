@@ -19,6 +19,7 @@ require "Inspired"
 local eActive = false
 local igniteFound = false
 local summonerSpells = {ignite = {}, flash = {}, heal = {}, barrier = {}}
+local skinMeta = {["Garen"] = {"Classic", "Sanguine", "Desert Trooper", "Commando", "Dreadknight", "Rugged", "Steel Legion", "Chroma Pack: Garnet", "Chroma Pack: Plum", "Chroma Pack: Ivory", "Rogue Admiral"}}
 
 GarenMenu = Menu("garen", "Icy Garen")
 GarenMenu:SubMenu("combo", "Combo")
@@ -30,6 +31,9 @@ GarenMenu:SubMenu("laneclear", "Laneclear")
 GarenMenu.laneclear:Boolean("E", "Use E", true)
 GarenMenu:SubMenu("ksteal", "Killsteal")
 GarenMenu.ksteal:Boolean("R", "Use R", true)
+GarenMenu:SubMenu("misc", "Misc")
+GarenMenu.misc:DropDown('skin', GetObjectName(myHero).. " Skins", 1, skinMeta[GetObjectName(myHero)], HeroSkinChanger, true)
+GarenMenu.misc.skin.callback = function(model) HeroSkinChanger(GetMyHero(), model - 1) PrintChat(skinMeta[GetObjectName(myHero)][model] .." ".. GetObjectName(myHero) .. " Loaded!") end
 GarenMenu:SubMenu("draws", "Drawing")
 GarenMenu.draws:Boolean("edraw", "Draw E", true)
 GarenMenu.draws:Boolean("rdraw", "Draw R", true)
