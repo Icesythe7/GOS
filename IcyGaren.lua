@@ -1,6 +1,6 @@
 if GetObjectName(GetMyHero()) ~= "Garen" then return end
 
-local ver = "0.01"
+local ver = "0.02"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -71,6 +71,7 @@ end
 OnTick (function()
 	numbers()
 	Killsteal()
+	BlockAA()
 	if IOW:Mode() == "Combo" then
 		Combo()
 	end
@@ -109,7 +110,8 @@ function Combo()
 	if GarenMenu.Combo.W:Value() and Ready(_W) and ValidTarget(target, 350) then 
 		CastSpell(_W)
 	end
-	if GarenMenu.Combo.E:Value() and Ready(_E) and ValidTarget(target, 350) then 
+	if GarenMenu.Combo.E:Value() and Ready(_E) and ValidTarget(target, 350) and (not timer or timer < os.clock()) then
+		timer = os.clock() + 3 
 		CastSpell(_E)
 	end
 	if (rLevel ~= (nil or 0)) then
@@ -122,7 +124,8 @@ end
 
 function Laneclear()
 	for i,minion in pairs(minionManager.objects) do
-  		if minion.team ~= myHero.team and ValidTarget(minion, 350) and GarenMenu.laneclear.E:Value() and Ready(_E) then
+  		if minion.team ~= myHero.team and ValidTarget(minion, 350) and GarenMenu.laneclear.E:Value() and Ready(_E) and (not timer or timer < os.clock()) then
+			timer = os.clock() + 3 
 			CastSpell(_E)
 		end
 	end
@@ -153,6 +156,14 @@ function Killsteal()
 				CastTargetSpell(enemy, _R)
 			end
 		end
+	end
+end
+
+function BlockAA()
+	if eActive then
+		IOW.attacksEnabled = false
+	else
+		IOW.attacksEnabled = true
 	end
 end
 
