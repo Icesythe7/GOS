@@ -1,6 +1,6 @@
 if GetObjectName(GetMyHero()) ~= "Garen" then return end
 
-local ver = "0.02"
+local ver = "0.03"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -16,7 +16,11 @@ GetWebResultAsync("https://raw.githubusercontent.com/Icesythe7/GOS/master/IcyGar
 
 require "Inspired"
 
+local ultbase = 0
+local percent = 0
+local qActive = false
 local eActive = false
+local cVillian = nil
 local igniteFound = false
 local summonerSpells = {ignite = {}, flash = {}, heal = {}, barrier = {}}
 local skinMeta = {["Garen"] = {"Classic", "Sanguine", "Desert Trooper", "Commando", "Dreadknight", "Rugged", "Steel Legion", "Chroma Pack: Garnet", "Chroma Pack: Plum", "Chroma Pack: Ivory", "Rogue Admiral"}}
@@ -37,6 +41,8 @@ GarenMenu.misc.skin.callback = function(model) HeroSkinChanger(GetMyHero(), mode
 GarenMenu:SubMenu("draws", "Drawing")
 GarenMenu.draws:Boolean("edraw", "Draw E", true)
 GarenMenu.draws:Boolean("rdraw", "Draw R", true)
+GarenMenu.draws:Boolean("rhpdraw", "Draw R Damage", true)
+
 
 OnLoad (function()
 	if not igniteFound then
@@ -51,6 +57,14 @@ OnLoad (function()
     	end
 	end
 end)
+
+DelayAction(function()
+	for i, enemy in pairs(GetEnemyHeroes()) do
+  		if GotBuff(enemy, "garenpassiveenemytarget") == 1 then
+    		cVillian = GetNetworkID(enemy)
+  		end
+	end
+end, 0.1)
 
 function numbers()
 	rLevel = GetSpellData(myHero, _R).level
@@ -84,10 +98,16 @@ OnUpdateBuff (function(unit, buff)
 	if not unit or not buff then
 		return
 	end
+	if buff.Name:lower() == "garenpassiveenemytarget" then
+      	cVillian = GetNetworkID(unit)
+    end
   	if unit.isMe then
     	if buff.Name:lower() == "garene" then
       		eActive = true
       	end
+      	if buff.Name:lower() == "garenq" then
+      		qActive = true
+      	end 
     end
 end)
 
@@ -95,27 +115,36 @@ OnRemoveBuff (function(unit, buff)
 	if not unit or not buff then
 		return
 	end
+	if buff.Name:lower() == "garenpassiveenemytarget" then
+      	cVillian = nil
+    end  
   	if unit.isMe then
     	if buff.Name:lower() == "garene" then
       		eActive = false
       	end
+      	if buff.Name:lower() == "garenq" then
+      		qActive = false
+      	end 
     end
 end)
 
 function Combo()
 	target = GetCurrentTarget()
+	if cVillian == GetNetworkID(target) then
+		rDamage = math.ceil((ultbase + ((GetMaxHP(target) - GetCurrentHP(target)) * (percent / 100))))
+	elseif cVillian ~= GetNetworkID(target) then
+		rDamage = math.ceil(CalcDamage(myHero, target, 0, (ultbase + ((GetMaxHP(target) - GetCurrentHP(target)) * (percent / 100)))))
+	end
 	if GarenMenu.Combo.Q:Value() and Ready(_Q) and ValidTarget(target, 800) and not eActive then 
 		CastSpell(_Q)
 	end
 	if GarenMenu.Combo.W:Value() and Ready(_W) and ValidTarget(target, 350) then 
 		CastSpell(_W)
 	end
-	if GarenMenu.Combo.E:Value() and Ready(_E) and ValidTarget(target, 350) and (not timer or timer < os.clock()) then
-		timer = os.clock() + 3 
+	if GarenMenu.Combo.E:Value() and Ready(_E) and ValidTarget(target, 350) and (not eActive) and (not qActive) then
 		CastSpell(_E)
 	end
 	if (rLevel ~= (nil or 0)) then
-		local rDamage = math.ceil(CalcDamage(myHero, target, 0, (ultbase + ((GetMaxHP(target) - GetCurrentHP(target)) * (percent / 100)))))
 		if GarenMenu.Combo.R:Value() and (GetCurrentHP(target) <= rDamage) and Ready(_R) and ValidTarget(target, 400) then 
 			CastTargetSpell(target, _R)
 		end
@@ -124,8 +153,7 @@ end
 
 function Laneclear()
 	for i,minion in pairs(minionManager.objects) do
-  		if minion.team ~= myHero.team and ValidTarget(minion, 350) and GarenMenu.laneclear.E:Value() and Ready(_E) and (not timer or timer < os.clock()) then
-			timer = os.clock() + 3 
+  		if minion.team ~= myHero.team and ValidTarget(minion, 350) and GarenMenu.laneclear.E:Value() and Ready(_E) and not eActive then
 			CastSpell(_E)
 		end
 	end
@@ -142,7 +170,11 @@ function Killsteal()
 	end
 	if igniteFound and GarenMenu.ksteal.ignite:Value() and Ready(summonerSpells.ignite) and (rLevel ~= (nil or 0)) and Ready(_R) and GarenMenu.ksteal.R:Value() then
     	for _, enemy in pairs(GetEnemyHeroes()) do
-    	local riDamage = math.ceil(CalcDamage(myHero, enemy, 0, (ultbase + ((GetMaxHP(enemy) - GetCurrentHP(enemy)) * (percent / 100)))) + (50 + (20 * GetLevel(myHero))))
+    		if cVillian == GetNetworkID(enemy) then 
+    			riDamage = math.ceil((ultbase + ((GetMaxHP(enemy) - GetCurrentHP(enemy)) * (percent / 100))) + (50 + (20 * GetLevel(myHero))))
+    		elseif cVillian ~= GetNetworkID(enemy) then
+    			riDamage = math.ceil(CalcDamage(myHero, enemy, 0, (ultbase + ((GetMaxHP(enemy) - GetCurrentHP(enemy)) * (percent / 100)))) + (50 + (20 * GetLevel(myHero))))
+    		end
     		if ValidTarget(enemy, 400) and (GetCurrentHP(enemy) <= riDamage) then
     			CastTargetSpell(enemy, summonerSpells.ignite)
     			DelayAction(function() CastTargetSpell(enemy, _R) end, 0.02)
@@ -151,8 +183,12 @@ function Killsteal()
 	end
 	if (rLevel ~= (nil or 0)) and Ready(_R) and GarenMenu.ksteal.R:Value() then
 		for _, enemy in pairs(GetEnemyHeroes()) do
-		local rDamage = math.ceil(CalcDamage(myHero, enemy, 0, (ultbase + ((GetMaxHP(enemy) - GetCurrentHP(enemy)) * (percent / 100)))))
-			if (GetCurrentHP(enemy) <= rDamage) and Ready(_R) and ValidTarget(enemy, 400) then 
+			if cVillian == GetNetworkID(enemy) then
+				rDamage2 = math.ceil((ultbase + ((GetMaxHP(enemy) - GetCurrentHP(enemy)) * (percent / 100))))
+			elseif cVillian ~= GetNetworkID(enemy) then
+				rDamage2 = math.ceil(CalcDamage(myHero, enemy, 0, (ultbase + ((GetMaxHP(enemy) - GetCurrentHP(enemy)) * (percent / 100)))))
+			end
+			if (GetCurrentHP(enemy) <= rDamage2) and Ready(_R) and ValidTarget(enemy, 400) then 
 				CastTargetSpell(enemy, _R)
 			end
 		end
@@ -174,6 +210,16 @@ OnDraw (function()
 		end
 		if GarenMenu.draws.rdraw:Value() and Ready(_R) then
 			DrawCircle(GetOrigin(myHero), 400, 2, 1, ARGB(255, 242, 0, 141))
+		end
+		if GarenMenu.draws.rhpdraw:Value() and Ready(_R) then
+			for _, enemy in pairs(GetEnemyHeroes()) do
+				if cVillian == GetNetworkID(enemy) then
+					rDamage3 = math.ceil((ultbase + ((GetMaxHP(enemy) - GetCurrentHP(enemy)) * (percent / 100))))
+				elseif cVillian ~= GetNetworkID(enemy) then
+					rDamage3 = math.ceil(CalcDamage(myHero, enemy, 0, (ultbase + ((GetMaxHP(enemy) - GetCurrentHP(enemy)) * (percent / 100)))))
+				end
+				DrawDmgOverHpBar(enemy, GetCurrentHP(enemy), 0, rDamage3, ARGB(255, 0, 255, 0))
+			end 
 		end
 	end
 end)
