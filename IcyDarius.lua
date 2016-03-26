@@ -1,6 +1,6 @@
 if GetObjectName(GetMyHero()) ~= "Darius" then return end
 
-local ver = "0.02"
+local ver = "0.03"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -18,17 +18,40 @@ require "Inspired"
 require "OpenPredict"
 
 local rDebuff        = {}
-local tAD            = (GetBaseDamage(myHero) + GetBonusDmg(myHero))
-local wDamage        = (tAD + (tAD * 0.4))
 local aaCD           = false
 local qCasting       = false
 local igniteFound    = false
-local summonerSpells = {ignite = {}, flash = {}, heal = {}, barrier = {}}
-local ATTACKITEMS    = {3077, 3748, 3144, 3142, 3146, 3153, 3074}
-local ANTICCITEMS    = {3140, 3137}
-local TIAMAT, TITANIC, CUTLASS, YOUMU, GUNBLADE, BTRK, RAVENOUS, Qss, DERVISH = false, false, false, false, false, false, false, false, false
-local TIAMATSLOT, TITANICSLOT, CUTLASSSLOT, YOUMUSLOT, GUNBLADESLOT, BOTRKSLOT, RAVENOUSSLOT, QSSSLOT, DERVISHSLOT, SMITESLOT = 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+local summonerSpells = {ignite = {}, flash = {}, heal = {}, barrier = {}, smite = {}}
 local skinMeta       = {["Darius"] = {"Classic", "Lord", "Bioforge", "Woad King", "Dunkmaster", "Chroma Pack: Black Iron", "Chroma Pack: Bronze", "Chroma Pack: Copper", "Academy"}}
+local attackItems = {
+  ["Tiamat"] = {
+    itemID = 3077
+  },
+  ["Titanic Hydra"] = {
+    itemID = 3748
+  },
+  ["Ravenous Hydra"] = {
+    itemID = 3074
+  },
+  ["Youmuu's Ghostblade"] = {
+    itemID = 3142
+  },
+  ["Bilgewater Cutlass"] = {
+    itemID = 3144,
+    requiresTarget = true,
+    spellRange = 550
+  },
+  ["Hextech Gunblade"] = {
+    itemID = 3146,
+    requiresTarget = true,
+    spellRange = 550
+  },
+  ["Blade of the Ruined King"] = {
+    itemID = 3153,
+    requiresTarget = true,
+    spellRange = 550
+  }
+}
 
 DariusMenu = Menu("darius", "Icy Darius")
 DariusMenu:SubMenu("Combo", "Combo")
@@ -38,6 +61,7 @@ DariusMenu.Combo:Boolean("W", "Use W", true)
 DariusMenu.Combo:Boolean("E", "Use Smart E", true)
 DariusMenu:SubMenu("Harass", "Harass")
 DariusMenu.Harass:Boolean("Q", "Use Q", true)
+DariusMenu.Harass:Boolean("W", "Use W", true)
 DariusMenu:SubMenu("Laneclear", "Laneclear")
 DariusMenu.Laneclear:Boolean("Q", "Use Q", true)
 DariusMenu.Laneclear:Boolean("W", "Use W", true)
@@ -102,7 +126,6 @@ end)
 
 OnTick (function()
   Killsteal()
-  Items()
   if IOW:Mode() == "Combo" then
     Combo()
     Qorb()
@@ -113,7 +136,6 @@ OnTick (function()
   end
   if IOW:Mode() == "LaneClear" then
     Laneclear()
-    Qorb()
   end
 end)
 
@@ -133,20 +155,17 @@ function Combo()
     aaCD = false
     AttackUnit(target)
   elseif ValidTarget(target, 255) and aaCD and DariusMenu.Combo.useItems:Value() then 
-    CastTITANIC()
-    CastTiamat()
-    CastRAVENOUS()
+    Items(nil, {["Tiamat"] = true, ["Titanic Hydra"] = true, ["Ravenous Hydra"] = true})
     aaCD = false
     AttackUnit(target)
   elseif ValidTarget(target, 425) and DariusMenu.Combo.Q:Value() and Ready(_Q) then
     CastSpell(_Q)
   end
   if ValidTarget(target, 700) and DariusMenu.Combo.useItems:Value() then
-    CastYoumu()
+    Items(nil, {["Youmuu's Ghostblade"] = true})
   end
   if ValidTarget(target, 550) and DariusMenu.Combo.useItems:Value() then
-    CastBOTRK(target)
-    CastCutlass(target)
+    Items(target, {["Bilgewater Cutlass"] = true, ["Hextech Gunblade"] = true, ["Blade of the Ruined King"] = true})
   end
 end
 
@@ -154,17 +173,15 @@ function Harass()
   local target = GetCurrentTarget()
   if ValidTarget(target, 255) and not aaCD then
     AttackUnit(target)
-  elseif ValidTarget(target, 255) and aaCD and DariusMenu.Combo.W:Value() and Ready(_W) then
+  elseif ValidTarget(target, 255) and aaCD and DariusMenu.Harass.W:Value() and Ready(_W) then
     CastSpell(_W)
     aaCD = false
     AttackUnit(target)
   elseif ValidTarget(target, 255) and aaCD and DariusMenu.Combo.useItems:Value() then 
-    CastTITANIC()
-    CastTiamat()
-    CastRAVENOUS()
+    Items(nil, {["Tiamat"] = true, ["Titanic Hydra"] = true, ["Ravenous Hydra"] = true})
     aaCD = false
     AttackUnit(target)
-  elseif ValidTarget(target, 425) and DariusMenu.Combo.Q:Value() and Ready(_Q) then
+  elseif ValidTarget(target, 425) and DariusMenu.Harass.Q:Value() and Ready(_Q) then
     CastSpell(_Q)
   end
 end
@@ -173,17 +190,15 @@ function Laneclear()
   for _, minion in pairs(minionManager.objects) do
     if ValidTarget(minion, 255) and not aaCD then
       --AttackUnit(minion)
-    elseif ValidTarget(minion, 255) and aaCD and DariusMenu.Combo.W:Value() and Ready(_W) then
+    elseif ValidTarget(minion, 255) and aaCD and DariusMenu.Laneclear.W:Value() and Ready(_W) then
       CastSpell(_W)
       aaCD = false
       --AttackUnit(minion)
     elseif ValidTarget(minion, 255) and aaCD and DariusMenu.Combo.useItems:Value() then 
-      CastTITANIC()
-      CastTiamat()
-      CastRAVENOUS()
+      Items(nil, {["Tiamat"] = true, ["Titanic Hydra"] = true, ["Ravenous Hydra"] = true})
       aaCD = false
       --AttackUnit(minion)
-    elseif ValidTarget(minion, 425) and DariusMenu.Combo.Q:Value() and Ready(_Q) then
+    elseif ValidTarget(minion, 425) and DariusMenu.Laneclear.Q:Value() and Ready(_Q) then
       CastSpell(_Q)
     end
   end
@@ -202,9 +217,9 @@ function Killsteal()
     if igniteFound and DariusMenu.ksteal.ignite:Value() and Ready(summonerSpells.ignite) then
         local iDamage = (50 + (20 * GetLevel(myHero)))
         local realHPi = (GetCurrentHP(enemy) + GetDmgShield(enemy) + (GetHPRegen(enemy) * 0.05))
-          if ValidTarget(enemy, 600) and realHPi <= iDamage then
-              CastTargetSpell(enemy, summonerSpells.ignite)
-            end
+        if ValidTarget(enemy, 600) and realHPi <= iDamage then
+          CastTargetSpell(enemy, summonerSpells.ignite)
+        end
     end
   end
 end
@@ -221,162 +236,31 @@ function Qorb()
   end
 end
 
-function Items()
-  if DariusMenu.Combo.useItems:Value() then
-    Tiamat()
-    Titanic()
-    BOTRK()
-    Cutlass()
-    Youmu()
-    Gunblade()
-    Ravenous()
-    QSS()
-    Dervish()
-  end
-end
-
-function Tiamat()
-  local slot = GetItemSlot(myHero, ATTACKITEMS[1])
-  if (slot ~= 0) then
-    TIAMAT = true
-    TIAMATSLOT = slot
-  else
-    TIAMAT = false
-  end
-end
-
-function Titanic()
-  local slot = GetItemSlot(myHero, ATTACKITEMS[2])
-  if (slot ~= 0) then
-    TITANIC = true
-    TITANICSLOT = slot
-  else
-    TITANIC = false
-  end
-end
-
-function Cutlass()
-  local slot = GetItemSlot(myHero, ATTACKITEMS[3])
-  if (slot ~= 0) then
-    CUTLASS = true
-    CUTLASSSLOT = slot
-  else
-    CUTLASS = false
-  end
-end
-
-function Youmu()
-  local slot = GetItemSlot(myHero, ATTACKITEMS[4])
-  if (slot ~= 0) then
-    YOUMU = true
-    YOUMUSLOT = slot
-  else
-    YOUMU = false
-  end
-end
-
-function Gunblade()
-  local slot = GetItemSlot(myHero, ATTACKITEMS[5])
-  if (slot ~= 0) then
-    GUNBLADE = true
-    GUNBLADESLOT = slot
-  else
-    GUNBLADE = false
-  end
-end
-
-function BOTRK()
-  local slot = GetItemSlot(myHero, ATTACKITEMS[6])
-  if (slot ~= 0) then
-    BTRK = true
-    BOTRKSLOT = slot
-  else
-    BTRK = false
-  end
-end
-
-function Ravenous()
-  local slot = GetItemSlot(myHero, ATTACKITEMS[7])
-  if (slot ~= 0) then
-    RAVENOUS = true
-    RAVENOUSSLOT = slot
-  else
-    RAVENOUS = false
-  end
-end
-
-function QSS()
-  local slot = GetItemSlot(myHero, ANTICCITEMS[1])
-  if (slot ~= 0) then
-    Qss = true
-    QSSSLOT = slot
-  else
-    Qss = false
-  end
-end
-
-function Dervish()
-  local slot = GetItemSlot(myHero, ANTICCITEMS[2])
-  if (slot ~= 0) then
-    DERVISH = true
-    DERVISHSLOT = slot
-  else
-    DERVISH = false
-  end
-end
-
-function CastTiamat()
-    if TIAMAT and Ready(TIAMATSLOT) then
-        CastSpell(TIAMATSLOT)
+function Items(target, list)
+  for itemName, attackItem in pairs(attackItems) do
+    if (list ~= nil) then
+      if (list[itemName] == true) then
+        CastItem(target, attackItem)
+      end
+    else
+      CastItem(target, attackItem)
     end
+  end
 end
 
-function CastYoumu()
-    if YOUMU and Ready(YOUMUSLOT) then
-        CastSpell(YOUMUSLOT)
+function CastItem(target, theItem)
+  local itemSlot = GetItemSlot(myHero, theItem.itemID)
+  if (itemSlot ~= 0) then
+    if ((theItem.spellRange == nil) or ((target ~= nil) and (GetDistance(myHero, target) <= theItem.spellRange))) then
+      if (Ready(itemSlot)) then
+        if ((theItem.requiresTarget == true) and (target ~= nil)) then
+          CastTargetSpell(target, itemSlot)
+        else
+          CastSpell(itemSlot)
+        end
+      end
     end
-end
-
-function CastBOTRK(target)
-    if BOTRK and GetDistance(myHero, target) <= 550 and Ready(BOTRKSLOT) then
-        CastTargetSpell(target, BOTRKSLOT)
-    end
-end
-
-function CastTITANIC()
-    if TITANIC and Ready(TITANICSLOT) then
-      CastSpell(TITANICSLOT)
-    end
-end
-
-function CastCutlass(target)
-    if CUTLASS and GetDistance(myHero, target) <= 550 and Ready(CUTLASSSLOT) then
-        CastTargetSpell(target, CUTLASSSLOT)
-    end
-end
-
-function CastRAVENOUS()
-    if RAVENOUS and Ready(RAVENOUSSLOT) then
-        CastSpell(RAVENOUSSLOT)
-    end
-end
-
-function CastGunblade(target)
-    if GUNBLADE and GetDistance(myHero, target) <= 700 and Ready(GUNBLADESLOT) then
-        CastTargetSpell(target, GUNBLADESLOT)
-    end
-end
-
-function CastQSS()
-    if QSS and Ready(QSSSLOT) then
-        CastSpell(QSSSLOT)
-    end
-end
-
-function CastDervish()
-    if DERVISH and Ready(DERVISHSLOT) then
-        CastSpell(DERVISHSLOT)
-    end
+  end
 end
 
 OnDraw (function()
@@ -397,20 +281,20 @@ OnDraw (function()
         local rStacks = rDebuff[enemy.networkID] or 0
         local rDamage = (((GetSpellData(myHero, _R).level * 100) + (GetBonusDmg(myHero) * 0.75)) + (rStacks * ((GetSpellData(myHero, _R).level * 20) + (GetBonusDmg(myHero) * 0.15)))) 
         if rDebuff[enemy.networkID] ~= nil and ValidTarget(enemy, 2000) then
-              if rDebuff[enemy.networkID] == 0 then
-              DrawTextA(""..rDebuff[enemy.networkID].."", 40, barPos.x+135, barPos.y-17, ARGB(255, 0, 255, 0))
+          if rDebuff[enemy.networkID] == 0 then
+            DrawTextA(""..rDebuff[enemy.networkID].."", 40, barPos.x+135, barPos.y-17, ARGB(255, 0, 255, 0))
           elseif rDebuff[enemy.networkID] == 1 then
-              DrawTextA(""..rDebuff[enemy.networkID].."", 40, barPos.x+135, barPos.y-17, ARGB(255, 173, 255, 47))
+            DrawTextA(""..rDebuff[enemy.networkID].."", 40, barPos.x+135, barPos.y-17, ARGB(255, 173, 255, 47))
           elseif rDebuff[enemy.networkID] == 2 then
-              DrawTextA(""..rDebuff[enemy.networkID].."", 40, barPos.x+135, barPos.y-17, ARGB(255, 255, 255, 0))
+            DrawTextA(""..rDebuff[enemy.networkID].."", 40, barPos.x+135, barPos.y-17, ARGB(255, 255, 255, 0))
           elseif rDebuff[enemy.networkID] == 3 then
-              DrawTextA(""..rDebuff[enemy.networkID].."", 40, barPos.x+135, barPos.y-17, ARGB(255, 255, 165, 0))
+            DrawTextA(""..rDebuff[enemy.networkID].."", 40, barPos.x+135, barPos.y-17, ARGB(255, 255, 165, 0))
           elseif rDebuff[enemy.networkID] == 4 then
-              DrawTextA(""..rDebuff[enemy.networkID].."", 40, barPos.x+135, barPos.y-17, ARGB(255, 139, 69, 0))
+            DrawTextA(""..rDebuff[enemy.networkID].."", 40, barPos.x+135, barPos.y-17, ARGB(255, 139, 69, 0))
           elseif rDebuff[enemy.networkID] == 5 and realHP > rDamage then
-              DrawTextA("Max Stacks", 40, barPos.x+135, barPos.y-17, ARGB(255, 255, 0, 0))
-            elseif realHP <= rDamage and Ready(_R) then
-              DrawTextA("Finish Him!!!", 40, barPos.x+135, barPos.y-17, ARGB(255, 255, 0, 0))
+            DrawTextA("Max Stacks", 40, barPos.x+135, barPos.y-17, ARGB(255, 255, 0, 0))
+          elseif realHP <= rDamage and Ready(_R) then
+            DrawTextA("Finish Him!!!", 40, barPos.x+135, barPos.y-17, ARGB(255, 255, 0, 0))
           end
         end
       end 
