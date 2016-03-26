@@ -1,6 +1,6 @@
 if GetObjectName(GetMyHero()) ~= "Darius" then return end
 
-local ver = "0.03"
+local ver = "0.04"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -14,9 +14,31 @@ end
 
 GetWebResultAsync("https://raw.githubusercontent.com/Icesythe7/GOS/master/IcyDarius.version", AutoUpdate)
 
-require "Inspired"
+function file_exists(path)
+  assert(type(path) == "string", "file_exists: wrong argument types (<string> expected for path)")
+  local file = io.open(path, "r")
+  if file then file:close() return true else return false end
+end
+
+if not file_exists(COMMON_PATH.. "GoSWalk.lua") then
+  DownloadFileAsync("https://raw.githubusercontent.com/KeVuong/GoS/master/GoSWalk.lua", COMMON_PATH .. "GoSWalk.lua", function() PrintChat("Downloaded GoSWalk, please 2x F6!") return end)
+else
+  require "GoSWalk"
+end
+
+if not _G.InspiredLoaded then
+  require('Inspired')
+end
+
 require "OpenPredict"
 
+if _G.GetSave("MenuConfig").Orbwalker.on.value then
+  _G.GetSave("MenuConfig").Orbwalker.on.value = false
+  PrintChat("IOW Disabled! Please 2x F6 for changes to take effect!")
+  return
+end
+
+local Walk = Orbwalking()
 local rDebuff        = {}
 local aaCD           = false
 local qCasting       = false
@@ -52,7 +74,7 @@ local attackItems = {
     spellRange = 550
   }
 }
-
+Walk:LoadMenu()
 DariusMenu = Menu("darius", "Icy Darius")
 DariusMenu:SubMenu("Combo", "Combo")
 DariusMenu.Combo:Boolean("useItems", "Use Items", true)
@@ -126,15 +148,15 @@ end)
 
 OnTick (function()
   Killsteal()
-  if IOW:Mode() == "Combo" then
+  if Walk:GetCurrentMode() == 0 then
     Combo()
     Qorb()
   end
-  if IOW:Mode() == "Harass" then
+  if Walk:GetCurrentMode() == 1 then
     Harass()
     Qorb()
   end
-  if IOW:Mode() == "LaneClear" then
+  if Walk:GetCurrentMode() == 2 then
     Laneclear()
   end
 end)
