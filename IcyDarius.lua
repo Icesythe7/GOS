@@ -1,6 +1,6 @@
 if GetObjectName(GetMyHero()) ~= "Darius" then return end
 
-local ver = "0.04"
+local ver = "0.05"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -14,31 +14,8 @@ end
 
 GetWebResultAsync("https://raw.githubusercontent.com/Icesythe7/GOS/master/IcyDarius.version", AutoUpdate)
 
-function file_exists(path)
-  assert(type(path) == "string", "file_exists: wrong argument types (<string> expected for path)")
-  local file = io.open(path, "r")
-  if file then file:close() return true else return false end
-end
-
-if not file_exists(COMMON_PATH.. "GoSWalk.lua") then
-  DownloadFileAsync("https://raw.githubusercontent.com/KeVuong/GoS/master/GoSWalk.lua", COMMON_PATH .. "GoSWalk.lua", function() PrintChat("Downloaded GoSWalk, please 2x F6!") return end)
-else
-  require "GoSWalk"
-end
-
-if not _G.InspiredLoaded then
-  require('Inspired')
-end
-
 require "OpenPredict"
 
-if _G.GetSave("MenuConfig").Orbwalker.on.value then
-  _G.GetSave("MenuConfig").Orbwalker.on.value = false
-  PrintChat("IOW Disabled! Please 2x F6 for changes to take effect!")
-  return
-end
-
-local Walk = Orbwalking()
 local rDebuff        = {}
 local aaCD           = false
 local qCasting       = false
@@ -74,7 +51,7 @@ local attackItems = {
     spellRange = 550
   }
 }
-Walk:LoadMenu()
+
 DariusMenu = Menu("darius", "Icy Darius")
 DariusMenu:SubMenu("Combo", "Combo")
 DariusMenu.Combo:Boolean("useItems", "Use Items", true)
@@ -148,17 +125,55 @@ end)
 
 OnTick (function()
   Killsteal()
-  if Walk:GetCurrentMode() == 0 then
-    Combo()
-    Qorb()
-  end
-  if Walk:GetCurrentMode() == 1 then
-    Harass()
-    Qorb()
-  end
-  if Walk:GetCurrentMode() == 2 then
-    Laneclear()
-  end
+  if IOW_Loaded then
+    if IOW:Mode() == "Combo" then
+      Combo()
+      Qorb()
+    end
+    if IOW:Mode() == "Harass" then
+      Harass()
+      Qorb()
+    end
+    if IOW:Mode() == "LaneClear" then
+      Laneclear()
+    end
+  elseif DAC_Loaded then
+    if DAC:Mode() == "Combo" then
+      Combo()
+      Qorb()
+    end
+    if DAC:Mode() == "Harass" then
+      Harass()
+      Qorb()
+    end
+    if DAC:Mode() == "LaneClear" then
+      Laneclear()
+    end
+  elseif PW_Loaded then
+    if PW:Mode() == "Combo" then
+      Combo()
+      Qorb()
+    end
+    if PW:Mode() == "Harass" then
+      Harass()
+      Qorb()
+    end
+    if PW:Mode() == "LaneClear" then
+      Laneclear()
+    end
+  elseif GoSWalkLoaded then
+    if GetCurrentMode() == 0 then
+        Combo()
+        Qorb()
+      end
+      if GetCurrentMode() == 1 then
+        Harass()
+        Qorb()
+      end
+      if GetCurrentMode() == 2 then
+        Laneclear()
+      end
+    end
 end)
 
 function Combo()
