@@ -1,6 +1,6 @@
 if GetObjectName(GetMyHero()) ~= "Darius" then return end
 
-local ver = "0.06"
+local ver = "0.07"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -137,7 +137,7 @@ OnTick (function()
     if IOW:Mode() == "LaneClear" then
       Laneclear()
     end
-  elseif _G.mc_cfg_orb.orb:Value() == 3 then
+  elseif DAC_Loaded then
     if DAC:Mode() == "Combo" then
       Combo()
       Qorb()
