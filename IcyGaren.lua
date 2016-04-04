@@ -1,6 +1,6 @@
 if GetObjectName(GetMyHero()) ~= "Garen" then return end
 
-local ver = "0.04"
+local ver = "0.041"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -153,7 +153,7 @@ OnProcessSpellComplete (function(unit, spell)
 	if not unit or not spell then
 		return
 	end
-	if GarenMenu.Combo.W:Value() and unit.type == myHero.type and spell.target and spell.target.isMe and Ready(_W) and spell.name:lower() ~= "recall" then 
+	if GarenMenu.Combo.W:Value() and unit.type == myHero.type and spell.target and spell.target.isMe and Ready(_W) and spell.name:lower() ~= "recall" and spell.name:lower() ~= "garenq" then 
 		CastSpell(_W) 
 	end
 end)
