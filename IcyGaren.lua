@@ -1,6 +1,6 @@
 if GetObjectName(GetMyHero()) ~= "Garen" then return end
 
-local ver = "0.03"
+local ver = "0.04"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(ver) then
@@ -14,8 +14,6 @@ end
 
 GetWebResultAsync("https://raw.githubusercontent.com/Icesythe7/GOS/master/IcyGaren.version", AutoUpdate)
 
-require "Inspired"
-
 local ultbase = 0
 local percent = 0
 local qActive = false
@@ -28,7 +26,7 @@ local skinMeta = {["Garen"] = {"Classic", "Sanguine", "Desert Trooper", "Command
 GarenMenu = Menu("garen", "Icy Garen")
 GarenMenu:SubMenu("combo", "Combo")
 GarenMenu.Combo:Boolean("Q", "Use Q", true)
-GarenMenu.Combo:Boolean("W", "Use W", true)
+GarenMenu.Combo:Boolean("W", "Use Smart W", true)
 GarenMenu.Combo:Boolean("E", "Use E", true)
 GarenMenu.Combo:Boolean("R", "Use R if will kill enemy", true)
 GarenMenu:SubMenu("laneclear", "Laneclear")
@@ -83,15 +81,38 @@ function numbers()
 end
 
 OnTick (function()
+	BlockAA()
 	numbers()
 	Killsteal()
-	BlockAA()
-	if IOW:Mode() == "Combo" then
-		Combo()
-	end
-	if IOW:Mode() == "LaneClear" then
-		Laneclear()
-	end
+	if IOW_Loaded then
+    	if IOW:Mode() == "Combo" then
+      		Combo()
+    	end
+    	if IOW:Mode() == "LaneClear" then
+      		Laneclear()
+    	end
+  	elseif DAC_Loaded then
+    	if DAC:Mode() == "Combo" then
+     		Combo()
+    	end
+    	if DAC:Mode() == "LaneClear" then
+      		Laneclear()
+    	end
+  	elseif PW_Loaded then
+    	if PW:Mode() == "Combo" then
+      		Combo()
+    	end
+    	if PW:Mode() == "LaneClear" then
+      		Laneclear()
+    	end
+  	elseif GoSWalkLoaded then
+    	if GoSWalk:GetCurrentMode() == 0 then
+        	Combo()
+      	end
+      	if GoSWalk:GetCurrentMode() == 2 then
+        	Laneclear()
+     	end
+    end
 end)
 
 OnUpdateBuff (function(unit, buff)
@@ -126,6 +147,15 @@ OnRemoveBuff (function(unit, buff)
       		qActive = false
       	end 
     end
+end)
+
+OnProcessSpellComplete (function(unit, spell)
+	if not unit or not spell then
+		return
+	end
+	if GarenMenu.Combo.W:Value() and unit.type == myHero.type and spell.target and spell.target.isMe and Ready(_W) and spell.name:lower() ~= "recall" then 
+		CastSpell(_W) 
+	end
 end)
 
 function Combo()
@@ -163,19 +193,21 @@ function Killsteal()
 	if igniteFound and GarenMenu.ksteal.ignite:Value() and Ready(summonerSpells.ignite) then
     local iDamage = (50 + (20 * GetLevel(myHero)))
       	for _, enemy in pairs(GetEnemyHeroes()) do
-        	if ValidTarget(enemy, 600) and GetCurrentHP(enemy) <= iDamage then
+      		local realHPi = (GetCurrentHP(enemy) + GetDmgShield(enemy) + (GetHPRegen(enemy) * 0.05))
+        	if ValidTarget(enemy, 600) and realHPi <= iDamage then
           		CastTargetSpell(enemy, summonerSpells.ignite)
           	end
         end
 	end
 	if igniteFound and GarenMenu.ksteal.ignite:Value() and Ready(summonerSpells.ignite) and (rLevel ~= (nil or 0)) and Ready(_R) and GarenMenu.ksteal.R:Value() then
     	for _, enemy in pairs(GetEnemyHeroes()) do
+    		local realHPi = (GetCurrentHP(enemy) + GetDmgShield(enemy) + (GetHPRegen(enemy) * 0.05))
     		if cVillian == GetNetworkID(enemy) then 
     			riDamage = math.ceil((ultbase + ((GetMaxHP(enemy) - GetCurrentHP(enemy)) * (percent / 100))) + (50 + (20 * GetLevel(myHero))))
     		elseif cVillian ~= GetNetworkID(enemy) then
     			riDamage = math.ceil(CalcDamage(myHero, enemy, 0, (ultbase + ((GetMaxHP(enemy) - GetCurrentHP(enemy)) * (percent / 100)))) + (50 + (20 * GetLevel(myHero))))
     		end
-    		if ValidTarget(enemy, 400) and (GetCurrentHP(enemy) <= riDamage) then
+    		if ValidTarget(enemy, 400) and (realHPi <= riDamage) then
     			CastTargetSpell(enemy, summonerSpells.ignite)
     			DelayAction(function() CastTargetSpell(enemy, _R) end, 0.02)
     		end
@@ -183,12 +215,13 @@ function Killsteal()
 	end
 	if (rLevel ~= (nil or 0)) and Ready(_R) and GarenMenu.ksteal.R:Value() then
 		for _, enemy in pairs(GetEnemyHeroes()) do
+			local realHPi = (GetCurrentHP(enemy) + GetDmgShield(enemy) + (GetHPRegen(enemy) * 0.05))
 			if cVillian == GetNetworkID(enemy) then
 				rDamage2 = math.ceil((ultbase + ((GetMaxHP(enemy) - GetCurrentHP(enemy)) * (percent / 100))))
 			elseif cVillian ~= GetNetworkID(enemy) then
 				rDamage2 = math.ceil(CalcDamage(myHero, enemy, 0, (ultbase + ((GetMaxHP(enemy) - GetCurrentHP(enemy)) * (percent / 100)))))
 			end
-			if (GetCurrentHP(enemy) <= rDamage2) and Ready(_R) and ValidTarget(enemy, 400) then 
+			if (realHPi <= rDamage2) and Ready(_R) and ValidTarget(enemy, 400) then 
 				CastTargetSpell(enemy, _R)
 			end
 		end
@@ -196,10 +229,25 @@ function Killsteal()
 end
 
 function BlockAA()
-	if eActive then
+	if eActive and IOW_Loaded then
 		IOW.attacksEnabled = false
-	else
+	elseif not eActive and IOW_Loaded then
 		IOW.attacksEnabled = true
+	end
+	if eActive and DAC_Loaded then
+		DAC.attacksEnabled = false
+	elseif not eActive and DAC_Loaded then
+		DAC.attacksEnabled = true
+	end
+	if eActive and PW_Loaded then
+		PW.attacksEnabled = false
+	elseif not eActive and PW_Loaded then
+		PW.attacksEnabled = true
+	end
+	if eActive and GoSWalkLoaded then 
+		GoSWalk:EnableAttack(false)
+	elseif not eActive and GoSWalkLoaded then
+		GoSWalk:EnableAttack(true)
 	end
 end
 
