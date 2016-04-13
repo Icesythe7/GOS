@@ -5,7 +5,7 @@ end
 require 'OpenPredict'
 require 'DamageLib'
 
-local rver = "0.1"
+local rver = "0.01"
 
 function AutoUpdate(data)
     if tonumber(data) > tonumber(rver) then
