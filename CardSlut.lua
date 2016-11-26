@@ -9,7 +9,7 @@ function SexyPrint(message)
 	print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end 
 
-local version = "0.1"
+local version = "0.11"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/CardSlut.lua".."?rand="..math.random(1,10000)
