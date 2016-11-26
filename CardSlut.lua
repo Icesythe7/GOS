@@ -9,6 +9,7 @@ function SexyPrint(message)
 	print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end 
 
+local version = "0.1"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/CardSlut.lua".."?rand="..math.random(1,10000)
@@ -36,7 +37,6 @@ end
 targetMinions = minionManager(MINION_ENEMY, 1000, myHero, MINION_SORT_MAXHEALTH_DEC)
 jungleMinions = minionManager(MINION_JUNGLE, 1000, myHero, MINION_SORT_MAXHEALTH_DEC)
 
-local version = "0.1"
 local selected = "GoldCardLock"
 local lastUse = 0
 local lastUse2 = 0
