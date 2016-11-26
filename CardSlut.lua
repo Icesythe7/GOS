@@ -39,6 +39,10 @@ targetMinions = minionManager(MINION_ENEMY, 1000, myHero, MINION_SORT_MAXHEALTH_
 jungleMinions = minionManager(MINION_JUNGLE, 1000, myHero, MINION_SORT_MAXHEALTH_DEC)
 
 local selected = "GoldCardLock"
+local picking = false
+local locked = false
+local t = {[5]=true,[11]=true,[24]=true}
+local tcc = nil
 local lastUse = 0
 local lastUse2 = 0
 local CastingUltimate = false
@@ -61,6 +65,7 @@ function Nmenu()
 
 	Nmenu:addSubMenu("[Card Slut] Combo Settings", "ComboSettings")
 	Nmenu.ComboSettings:addParam("UseQ", "Use Q in 'Combo'", SCRIPT_PARAM_ONOFF, true)
+	Nmenu.ComboSettings:addParam("UseQ2", "Q on stunned only", SCRIPT_PARAM_ONKEYTOGGLE, false, GetKey("Z"))
 	Nmenu.ComboSettings:addParam("UseW", "Use W in 'Combo'", SCRIPT_PARAM_ONOFF, true)
 	Nmenu.ComboSettings:addParam("SelectCard", "Select card to use in 'Combo'", SCRIPT_PARAM_LIST, 1, {"Smart", "Gold", "Red", "Blue"})
 	Nmenu.ComboSettings:addParam("ManaManager", "Mana Manager (Blue Card) under", SCRIPT_PARAM_SLICE, 40, 0, 100, 0)
@@ -101,15 +106,17 @@ function Nmenu()
 	Nmenu:addSubMenu("[Card Slut] Misc", "Misc")
 	Nmenu.Misc:addParam("skins", myHero.charName .. " Skins", SCRIPT_PARAM_LIST, 1, skinMeta[myHero.charName])
 	Nmenu.Misc:setCallback("skins", StartSkin)
+	Nmenu.Misc:addParam("AutoQS", "Auto Q on CC targets", SCRIPT_PARAM_ONOFF, true)
 
 	Nmenu:addSubMenu("[Card Slut] Permashow Settings", "PSSettings")
 	Nmenu.PSSettings:addParam("permashow", "Enable/Disable ALL", SCRIPT_PARAM_ONOFF, true)
 	Nmenu.PSSettings:addParam("permashow1", "Combo (Permashow)", SCRIPT_PARAM_ONOFF, true)
 	Nmenu.PSSettings:addParam("permashow2", "Harass (Permashow)", SCRIPT_PARAM_ONOFF, true)
 	Nmenu.PSSettings:addParam("permashow3", "Auto Harass Toggle (Permashow)", SCRIPT_PARAM_ONOFF, true)
-	Nmenu.PSSettings:addParam("permashow4", "Pick Gold Card (Permashow)", SCRIPT_PARAM_ONOFF, true)
-	Nmenu.PSSettings:addParam("permashow5", "Pick Red Card (Permashow)", SCRIPT_PARAM_ONOFF, true)
-	Nmenu.PSSettings:addParam("permashow6", "Pick Blue Card (Permashow)", SCRIPT_PARAM_ONOFF, true)
+	Nmenu.PSSettings:addParam("permashow4", "Q on Stun Only (Permashow)", SCRIPT_PARAM_ONOFF, true)
+	Nmenu.PSSettings:addParam("permashow5", "Pick Gold Card (Permashow)", SCRIPT_PARAM_ONOFF, true)
+	Nmenu.PSSettings:addParam("permashow6", "Pick Red Card (Permashow)", SCRIPT_PARAM_ONOFF, true)
+	Nmenu.PSSettings:addParam("permashow7", "Pick Blue Card (Permashow)", SCRIPT_PARAM_ONOFF, true)
 	Nmenu.PSSettings:addParam("WarningSpace", "-------------------------------------------------------------------", 5, "")
 	Nmenu.PSSettings:addParam("Warning", "Warning: All changes requires a Reload", 5, "")
 
@@ -128,9 +135,10 @@ function Nmenu()
 	if Nmenu.PSSettings.permashow and Nmenu.PSSettings.permashow1 then Nmenu.KeyBindings:permaShow("Combo") end
 	if Nmenu.PSSettings.permashow and Nmenu.PSSettings.permashow2 then Nmenu.KeyBindings:permaShow("Harass") end
 	if Nmenu.PSSettings.permashow and Nmenu.PSSettings.permashow3 then Nmenu.HarassSettings:permaShow("AutoHarass") end
-	if Nmenu.PSSettings.permashow and Nmenu.PSSettings.permashow4 then Nmenu.KeyBindings:permaShow("PickGold") end
-	if Nmenu.PSSettings.permashow and Nmenu.PSSettings.permashow5 then Nmenu.KeyBindings:permaShow("PickRed") end
-	if Nmenu.PSSettings.permashow and Nmenu.PSSettings.permashow6 then Nmenu.KeyBindings:permaShow("PickBlue") end
+	if Nmenu.PSSettings.permashow and Nmenu.PSSettings.permashow4 then Nmenu.ComboSettings:permaShow("UseQ2") end
+	if Nmenu.PSSettings.permashow and Nmenu.PSSettings.permashow5 then Nmenu.KeyBindings:permaShow("PickGold") end
+	if Nmenu.PSSettings.permashow and Nmenu.PSSettings.permashow6 then Nmenu.KeyBindings:permaShow("PickRed") end
+	if Nmenu.PSSettings.permashow and Nmenu.PSSettings.permashow7 then Nmenu.KeyBindings:permaShow("PickBlue") end
 	
 	if not igniteFound then
     	if myHero:GetSpellData(SUMMONER_1).name:lower() == "summonerdot" then
@@ -230,9 +238,44 @@ function OnTick()
 	end
 end
 
+function OnApplyBuff(unit, source, buff)
+	if unit.isMe then
+		if buff.name == "pickacard_tracker" then 
+			picking = true
+		end
+		if buff.name == "GoldCardPreAttack" then
+			locked = true
+		end
+	end
+end
+
+function OnUpdateBuff(unit, buff)
+	if Nmenu.Misc.AutoQS and unit ~= nil and unit.valid and isReady(_Q) and GetDistance(unit, myHero) <= 1440 and unit.type == myHero.type and unit.team ~= myHero.team and t[buff.type] then
+		CastSpell(_Q, unit.x, unit.z)
+		SexyPrint("Casted Q on CC'd target  " ..unit.charName.. "!")
+	end
+	if unit ~= nil and unit.valid and GetDistance(unit, myHero) <= 1440 and unit.type == myHero.type and unit.team ~= myHero.team and t[buff.type] then
+		tcc = unit.charName
+	end
+	if tcc ~= nil and unit ~= nil and unit.charName == tcc and unit.valid and unit.type == myHero.type and unit.team ~= myHero.team and not t[buff.type] then
+		tcc = nil
+	end
+end
+
+function OnRemoveBuff(unit, buff)
+	if unit.isMe then
+		if buff.name == "pickacard_tracker" then 
+			picking = false
+		end
+		if buff.name == "GoldCardPreAttack" then
+			locked = false
+		end
+	end
+end
+
 function Combo()
 	Target = GetCustomTarget()
-	if isReady(_W) and ValidTarget(Target) then
+	if Nmenu.ComboSettings.UseW and isReady(_W) and ValidTarget(Target) then
 		if Nmenu.ComboSettings.SelectCard == 1 and myHero:GetSpellData(_W).name == "PickACard" and GetTickCount()-lastUse2 >= 2400 and GetTickCount()-lastUse >= 500 then
 			local AOECastPosition, MainTargetHitChance, nTargets = VP:GetCircularAOECastPosition(Target, 0, 80, 600, 2000, myHero)
 			if nTargets >= 2 then
@@ -274,14 +317,12 @@ function Combo()
 				lastUse = GetTickCount()
 			end
 		end
-		if isReady(_Q) and ValidTarget(Target) and GetDistance(Target, myHero) and TargetHaveBuff("stun", Target) then
+		if Nmenu.ComboSettings.UseQ and Nmenu.ComboSettings.UseQ2 and isReady(_Q) and ValidTarget(Target) and GetDistance(Target, myHero) <= 1440 and Target.charName == tcc then
+			CastSpell(_Q, Target.x, Target.z)
+		elseif Nmenu.ComboSettings.UseQ and Nmenu.ComboSettings.UseQ2 and isReady(_Q) and ValidTarget(Target) and GetDistance(Target, myHero) <= 1440 and not isReady(_W) and not picking and not locked then
 			local AOECastPosition, MainTargetHitChance, nTargets = VP:GetLineAOECastPosition(Target, 0, 80, 600, 2000, myHero)
-			if nTargets >= 1 then
-				if GetDistance(Target, myHero) <= 1440 then
-					CastSpell(_Q, AOECastPosition.x, AOECastPosition.z)
-				end
-			end
-		elseif isReady(_Q) and ValidTarget(Target) and GetDistance(Target, myHero) then
+			CastSpell(_Q, AOECastPosition.x, AOECastPosition.z)
+		elseif not Nmenu.ComboSettings.UseQ2 and Nmenu.ComboSettings.UseQ and isReady(_Q) and ValidTarget(Target) and GetDistance(Target, myHero) and not picking and not locked then
 			local AOECastPosition, MainTargetHitChance, nTargets = VP:GetLineAOECastPosition(Target, 0, 80, 600, 2000, myHero)
 			if nTargets >= 1 and MainTargetHitChance >= 3 then
 				if GetDistance(Target, myHero) <= 1440 then
