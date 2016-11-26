@@ -25,6 +25,7 @@ if AUTOUPDATE then
 				SexyPrint("New version available "..ServerVersion)
 				SexyPrint("Updating, please don't press F9")
 				DelayAction(function() DownloadFile(UPDATE_URL, UPDATE_FILE_PATH, function () SexyPrint("Successfully updated. ("..version.." => "..ServerVersion.."), press F9 twice to load the updated version.") end) end, 2)
+				return
 			else
 				SexyPrint("You have got the latest version ("..ServerVersion..")")
 			end
