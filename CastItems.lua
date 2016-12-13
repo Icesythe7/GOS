@@ -118,7 +118,6 @@ items =
 
 function OnLoad()
   --ItemCaster()
-  SexyPrint("Version " ..version.. " loaded!")
 end
 
 function CastItem(theItem, p2, p3)
