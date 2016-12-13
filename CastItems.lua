@@ -117,7 +117,7 @@ items =
 }
 
 function OnLoad()
-  --ItemCaster()
+  ItemCaster()
 end
 
 function CastItem(theItem, p2, p3)
