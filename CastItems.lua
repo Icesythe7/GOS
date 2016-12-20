@@ -121,7 +121,7 @@ function OnLoad()
 end
 
 function HasItem(id)  
-  local itemSlot = GetInventorySlotItem(theItem)
+  local itemSlot = GetInventorySlotItem(id)
   if itemSlot ~= nil then
     return true
   else
