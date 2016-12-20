@@ -5,7 +5,7 @@ function SexyPrint(message)
   print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end 
 
-local version = "0.01"
+local version = "0.02"
 local lastUse = os.clock()
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
@@ -117,13 +117,32 @@ items =
 }
 
 function OnLoad()
-  ItemCaster()
+  --ItemCaster()
+end
+
+function HasItem(id)  
+  local itemSlot = GetInventorySlotItem(theItem)
+  if itemSlot ~= nil then
+    return true
+  else
+    return false
+  end
+end
+
+function ItemReady(id)
+  if HasItem(id) then
+    if myHero:CanUseSpell(id) == READY then
+      return true
+    else
+      return false
+    end
+  end
 end
 
 function CastItem(theItem, p2, p3)
   local itemSlot = GetInventorySlotItem(theItem)
-  if itemSlot ~= nil then
-    if myHero:CanUseSpell(itemSlot) == READY then
+  if HasItem(theItem) then
+    if ItemReady(theItem) then
       if items[theItem].requiresTarget then
         CastSpell(itemSlot, p2)
       elseif items[theItem].requiresXZ then
@@ -132,15 +151,15 @@ function CastItem(theItem, p2, p3)
         CastSpell(itemSlot)
       end
     else
-      if Imenu.debug.print and lastUse < os.clock() then
+      --[[if Imenu.debug.print and lastUse < os.clock() then
         SexyPrint(items[theItem].nickName.. " is not ready!")
         lastUse = os.clock() + 1
-      end
+      end]]
     end
   else
-    if Imenu.debug.print and lastUse < os.clock() then
+    --[[if Imenu.debug.print and lastUse < os.clock() then
       SexyPrint("No " ..items[theItem].nickName.. " detected!")
       lastUse = os.clock() + 1
-    end
+    end]]
   end
 end
