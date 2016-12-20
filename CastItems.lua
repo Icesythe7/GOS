@@ -131,7 +131,8 @@ end
 
 function ItemReady(id)
   if HasItem(id) then
-    if myHero:CanUseSpell(id) == READY then
+    local itemSlot = GetInventorySlotItem(id)
+    if myHero:CanUseSpell(itemSlot) == READY then
       return true
     else
       return false
