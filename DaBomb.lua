@@ -9,7 +9,7 @@ function SexyPrint(message)
   print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end
 
-local version = "0.01"
+local version = "0.02"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/DaBomb.lua".."?rand="..math.random(1,10000)
@@ -185,22 +185,8 @@ function Ziggs()
   Tmenu.JungleSettings:addParam("UseE", "Use E in 'Jungle'", SCRIPT_PARAM_ONOFF, true)
 
   Tmenu:addSubMenu("[Da Bomb] Anti-GapClosers", "anti")
-  for i, name in pairs(antiGapClosers) do
-    for _, enemy in pairs(GetEnemyHeroes()) do
-      if name.Name == enemy.charName then
-        Tmenu.anti:addParam(name.Name, name.Name.." > "..name.spellname, SCRIPT_PARAM_ONOFF, true)
-      end
-    end
-  end
 
   Tmenu:addSubMenu("[Da Bomb] Auto-Interupts", "auto")
-  for i, name in pairs(autoInterupt) do
-    for _, enemy in pairs(GetEnemyHeroes()) do
-      if name.Name == enemy.charName then
-        Tmenu.auto:addParam(i, name.Name.." > "..name.spellname, SCRIPT_PARAM_ONOFF, true)
-      end
-    end
-  end
 
   Tmenu:addSubMenu("[Da Bomb] Misc", "Misc")
   Tmenu.Misc:addParam("Flee", "Flee Key", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("G"))
@@ -268,6 +254,24 @@ function OnLoad()
   Ziggs()
   SexyPrint("Version " ..version.. " Loaded!")
   StartSkin()
+  DelayAction(function() 
+    for i, name in pairs(antiGapClosers) do
+      for _, enemy in pairs(GetEnemyHeroes()) do
+        if name.Name == enemy.charName then
+          Tmenu.anti:addParam(name.Name, name.Name.." > "..name.spellname, SCRIPT_PARAM_ONOFF, true)
+        end
+      end
+    end
+  end, 2)
+  DelayAction(function() 
+    for i, name in pairs(autoInterupt) do
+      for _, enemy in pairs(GetEnemyHeroes()) do
+        if name.Name == enemy.charName then
+          Tmenu.auto:addParam(i, name.Name.." > "..name.spellname, SCRIPT_PARAM_ONOFF, true)
+        end
+      end
+    end
+  end, 2)
 end
 
 function StartSkin()
@@ -416,22 +420,24 @@ function GetMinionsHit(Pos, radius)
 end
 
 function OnCreateObj(o)
-  if o and o.valid and o.name == "Ziggs_Base_W_Countdown.troy" then
-    canJump = true
-    satchel = o
-  end
-  if o and o.valid and o.name == "Ziggs_Turret_Marker_Red.troy" then
-    tower = o
+  if o and o.valid then
+    if o.name == "Ziggs_Base_W_Countdown.troy" then
+      canJump = true
+      satchel = o
+    elseif o.name == "Ziggs_Turret_Marker_Red.troy" then
+      tower = o
+    end
   end
 end
 
 function OnDeleteObj(o)
-  if o and o.valid and o.name == "Ziggs_Base_W_Countdown.troy" then
-    canJump = false
-    satchel = nil
-  end
-  if o and o.valid and o.name == "Ziggs_Turret_Marker_Red.troy" then
-    tower = nil
+  if o and o.valid then
+    if o.name == "Ziggs_Base_W_Countdown.troy" then
+      canJump = false
+      satchel = nil
+    elseif o.name == "Ziggs_Turret_Marker_Red.troy" then
+      tower = nil
+    end
   end
 end
 
