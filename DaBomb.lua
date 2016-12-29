@@ -271,7 +271,7 @@ function OnLoad()
         end
       end
     end
-  end, 2)
+  end, 3)
 end
 
 function StartSkin()
