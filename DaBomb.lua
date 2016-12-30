@@ -9,7 +9,7 @@ function SexyPrint(message)
   print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end
 
-local version = "0.02"
+local version = "0.03"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/DaBomb.lua".."?rand="..math.random(1,10000)
@@ -55,6 +55,7 @@ UPL:AddSpell(_R, { speed = math.huge, delay = 0.375, range = 5000, width = 550, 
 local jungleMinions = minionManager(MINION_JUNGLE, 850, myHero, MINION_SORT_MAXHEALTH_DEC)
 local targetMinions = minionManager(MINION_ENEMY, 1400, myHero, MINION_SORT_MAXHEALTH_DEC)
 local sEnemies = GetEnemyHeroes()
+local enemies = {}
 local tower = nil
 local canJump = false
 local satchel = nil
@@ -255,23 +256,24 @@ function OnLoad()
   SexyPrint("Version " ..version.. " Loaded!")
   StartSkin()
   DelayAction(function() 
+    for _, enemy in pairs(sEnemies) do
+      table.insert(enemies, enemy.charName)
+    end
     for i, name in pairs(antiGapClosers) do
-      for _, enemy in pairs(GetEnemyHeroes()) do
-        if name.Name == enemy.charName then
+      for a, x in pairs(enemies) do
+        if x == name.Name then
           Tmenu.anti:addParam(name.Name, name.Name.." > "..name.spellname, SCRIPT_PARAM_ONOFF, true)
         end
       end
     end
-  end, 2)
-  DelayAction(function() 
     for i, name in pairs(autoInterupt) do
-      for _, enemy in pairs(GetEnemyHeroes()) do
-        if name.Name == enemy.charName then
+      for a, x in pairs(enemies) do
+        if x == name.Name then
           Tmenu.auto:addParam(i, name.Name.." > "..name.spellname, SCRIPT_PARAM_ONOFF, true)
         end
       end
     end
-  end, 3)
+  end, 2)
 end
 
 function StartSkin()
