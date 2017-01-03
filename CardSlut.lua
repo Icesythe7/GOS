@@ -30,7 +30,7 @@ if not _G.UPLloaded then
   end
 end
 
-local version = "1.0"
+local version = "1.1"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/CardSlut.lua".."?rand="..math.random(1,10000)
@@ -60,6 +60,9 @@ UPL:AddSpell(_Q, {speed = 1000, delay = 0.25, range = 1450, width = 80, collisio
 targetMinions = minionManager(MINION_ENEMY, 1000, myHero, MINION_SORT_MAXHEALTH_DEC)
 jungleMinions = minionManager(MINION_JUNGLE, 1000, myHero, MINION_SORT_MAXHEALTH_DEC)
 
+local bCard = false
+local gCard = false
+local rCard = false
 local picking = false
 local locked = false
 local t = {[5]=true,[11]=true,[24]=true,[29]=true,[30]=true}
@@ -143,7 +146,7 @@ function Nmenu()
 	Nmenu.PSSettings:addParam("Warning", "Warning: All changes requires a Reload", 5, "")
 
 	Nmenu:addParam("Space","", 5, "")
-	Nmenu:addParam("Author","Author: Bing", 5, "")
+	Nmenu:addParam("Author","Author: Google", 5, "")
 	Nmenu:addParam("Version","Version: "..version.."", 5, "")
 
 	if Nmenu.PSSettings.permashow and Nmenu.PSSettings.permashow3 then Nmenu.HarassSettings:permaShow("AutoHarass") end
@@ -202,8 +205,6 @@ function OnTick()
 	end
 	if UOL:GetOrbWalkMode() == "LaneClear" then
 		Laneclear()
-	end
-	if UOL:GetOrbWalkMode() == "LaneClear" then
 		Jungleclear()
 	end
 	if igniteFound and Nmenu.Misc.ign then
@@ -248,23 +249,48 @@ function OnRemoveBuff(unit, buff)
 	end
 end
 
-function CardPicker()
-	if isReady(_W) and Nmenu.KeyBindings.PickGold then
-		toSelect[1] = true
-		CastSpell(_W)
-	elseif isReady(_W) and Nmenu.KeyBindings.PickBlue then
-		toSelect[2] = true
-		CastSpell(_W)
-	elseif isReady(_W) and Nmenu.KeyBindings.PickRed then
-		toSelect[3] = true
-		CastSpell(_W)
+function OnCreateObj(o)
+	if o and o.valid then
+		if o.name == "TwistedFate_Base_W_BlueCard.troy" then
+			bCard = true
+		elseif o.name == "TwistedFate_Base_W_RedCard.troy" then
+			rCard = true
+		elseif o.name == "TwistedFate_Base_W_GoldCard.troy" then
+			gCard = true
+		end
 	end
-	if picking then
-		if toSelect[1] and myHero:GetSpellData(_W).name == "GoldCardLock" then
+end
+
+function OnDeleteObj(o)
+	if o and o.valid then
+		if o.name == "TwistedFate_Base_W_BlueCard.troy" then
+			bCard = false
+		elseif o.name == "TwistedFate_Base_W_RedCard.troy" then
+			rCard = false
+		elseif o.name == "TwistedFate_Base_W_GoldCard.troy" then
+			gCard = false
+		end
+	end
+end
+
+function CardPicker()
+	if not picking then
+		if isReady(_W) and Nmenu.KeyBindings.PickGold then
+			toSelect[1] = true
+			CastSpell(_W)
+		elseif isReady(_W) and Nmenu.KeyBindings.PickBlue then
+			toSelect[2] = true
+			CastSpell(_W)
+		elseif isReady(_W) and Nmenu.KeyBindings.PickRed then
+			toSelect[3] = true
+			CastSpell(_W)
+		end
+	elseif picking then
+		if toSelect[1] and gCard then
 			CastSpellEx(_W)
-		elseif toSelect[2] and myHero:GetSpellData(_W).name == "BlueCardLock" then
+		elseif toSelect[2] and bCard then
 			CastSpellEx(_W)
-		elseif toSelect[3] and myHero:GetSpellData(_W).name == "RedCardLock" then
+		elseif toSelect[3] and rCard then
 			CastSpellEx(_W)
 		else 
 			return
