@@ -34,7 +34,7 @@ if not _G.UPLloaded then
   	end
 end
 
-local version = "0.11"
+local version = "0.12"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/BlazeIt.lua".."?rand="..math.random(1,10000)
@@ -274,7 +274,6 @@ end
 function Combo()
 	local target = GetTarget(1100)
 	if target ~= nil and ValidTarget(target) then
-		print(GetDamage(_R, target))
 		local distance = GetDistanceSqr(target)
 		if CountEnemyHeroInRange(450, target) >= 2 then
 			if OnFire(target) then
