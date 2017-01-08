@@ -34,7 +34,7 @@ if not _G.UPLloaded then
   end
 end
 
-local version = "1.11"
+local version = "1.2"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/CardSlut.lua".."?rand="..math.random(1,10000)
@@ -61,9 +61,8 @@ if AUTOUPDATE then
 end
 
 UPL:AddSpell(_Q, {speed = 1000, delay = 0.25, range = 1450, width = 80, collision = false, aoe = false, type = "linear"})
-targetMinions = minionManager(MINION_ENEMY, 1000, myHero, MINION_SORT_MAXHEALTH_DEC)
-jungleMinions = minionManager(MINION_JUNGLE, 1000, myHero, MINION_SORT_MAXHEALTH_DEC)
-
+local targetMinions = minionManager(MINION_ENEMY, 1000, myHero, MINION_SORT_MAXHEALTH_DEC)
+local jungleMinions = minionManager(MINION_JUNGLE, 1000, myHero, MINION_SORT_MAXHEALTH_DEC)
 local bCard = false
 local gCard = false
 local rCard = false
@@ -74,6 +73,7 @@ local toSelect = {[1]=false,[2]=false,[3]=false}
 local tcc = nil
 local CastingUltimate = false
 local igniteFound    = false
+local lastRotate = false
 local summonerSpells = {ignite = {}, flash = {}, heal = {}, barrier = {}, smite = {}}
 local skinMeta = 
 {
@@ -107,7 +107,7 @@ function Nmenu()
 
 	Nmenu:addSubMenu("[Card Slut] Laneclear Settings", "LaneSettings")
 	Nmenu.LaneSettings:addParam("UseQ", "Use Q in 'Laneclear'", SCRIPT_PARAM_ONOFF, true)
-	Nmenu.LaneSettings:addParam("UseW", "Use W in 'Laneclear'", SCRIPT_PARAM_ONOFF, true)
+	Nmenu.LaneSettings:addParam("UseW", "W Mode in 'Laneclear'", SCRIPT_PARAM_LIST, 3, {"Off", "On", "[Beta] Rotate"})
 	Nmenu.LaneSettings:addParam("SelectCard", "Select card to use in 'Laneclear'", SCRIPT_PARAM_LIST, 1, {"Smart", "Red", "Blue", "Gold"})
 	Nmenu.LaneSettings:addParam("ManaManager", "Mana Manager (Blue Card) under", SCRIPT_PARAM_SLICE, 40, 0, 100, 0)
 	Nmenu.LaneSettings:addParam("ManaManager2", "Do not use (Wild Cards) under", SCRIPT_PARAM_SLICE, 40, 0, 100, 0)
@@ -199,8 +199,6 @@ function OnTick()
 	if myHero.dead then
 		return
 	end
-	targetMinions:update()
-	jungleMinions:update()
 	if UOL:GetOrbWalkMode() == "Combo" then
 		Combo()
 	end
@@ -217,15 +215,25 @@ function OnTick()
 	CardPicker()
 end
 
-function OnApplyBuff(unit, source, buff)
-	if unit.isMe then
-		if buff.name == "pickacard_tracker" then 
-			picking = true
-		end
-		if buff.name:find("CardPreAttack") then
-			locked = true
-			toSelect = {false, false, false}
-		end
+function GetTarget(range)
+	local orb = UOL:GetActiveOrb()
+	if orb == "Pewalk" then
+		return _Pewalk.GetTarget(range)
+	elseif orb == "SAC" then 
+		_G.AutoCarry.Crosshair:SetSkillCrosshairRange(range)
+		return _G.AutoCarry.SkillsCrosshair.target
+	elseif orb == "MMA" then
+		return _G.MMA_Target(range)
+	elseif orb == "NOW" then
+		return _G.NebelwolfisOrbWalker:GetTarget() 
+	elseif orb == "SxOrb" then 
+		return SxOrb:GetTarget(range) --test
+	elseif orb == "SOW" then 
+		return SOWVP:GetTarget(range) 
+	elseif orb == "BFW" then 
+		return Orbwalk_GetTarget(range) --test
+	else
+		return nil
 	end
 end
 
@@ -239,6 +247,17 @@ function OnUpdateBuff(unit, buff)
 	if tcc ~= nil and unit ~= nil and unit.charName == tcc and unit.valid and unit.type == myHero.type and unit.team ~= myHero.team and not t[buff.type] then
 		tcc = nil
 	end
+	if unit ~= nil and buff ~= nil and unit.isMe then
+		if buff.name == "pickacard_tracker" then 
+			picking = true
+			DelayAction(function() lastRotate = true end, 3.75)
+		end
+		if buff.name:find("CardPreAttack") then
+			locked = true
+			toSelect = {false, false, false}
+			lastRotate = false
+		end
+	end
 end
 
 function OnRemoveBuff(unit, buff)
@@ -246,6 +265,7 @@ function OnRemoveBuff(unit, buff)
 		if buff.name == "pickacard_tracker" then 
 			picking = false
 			toSelect = {false, false, false}
+			lastRotate = false
 		end
 		if buff.name:find("CardPreAttack") then
 			locked = false
@@ -303,7 +323,7 @@ function CardPicker()
 end
 
 function Combo()
-	local Target = UOL:GetTarget()
+	local Target = GetTarget(1500)
 	if Target ~= nil and Nmenu.ComboSettings.UseW and isReady(_W) and myHero:GetSpellData(_W).name == "PickACard" and ValidTarget(Target) then
 		if GetDistance(Target, myHero) <= Nmenu.ComboSettings.CardRange then
 			toSelect[Nmenu.ComboSettings.SelectCard] = true
@@ -326,7 +346,7 @@ function Combo()
 end
 
 function Harass()
-	local Target = UOL:GetTarget()
+	local Target = GetTarget(1500)
 	if Target ~= nil and ValidTarget(Target) and GetDistance(Target, myHero) <= 1440 and isReady(_Q) and Nmenu.HarassSettings.UseQ then
 		local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q, myHero, Target)
 		if CastPosition and HitChance > 0 then
@@ -352,51 +372,88 @@ function Harass()
 end
 
 function Laneclear()
+	targetMinions:update()
+	local target = GetTarget(1500)
 	for i, targetMinion in pairs(targetMinions.objects) do
-		if targetMinion ~= nil then
+		if targetMinion ~= nil and ValidTarget(targetMinion) then
+			local distance = GetDistanceSqr(targetMinion)
 			if Nmenu.LaneSettings.UseQ and isReady(_Q) then
 				local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q, myHero, targetMinion)
 				if (myHero.mana / myHero.maxMana > Nmenu.LaneSettings.ManaManager2 /100) and CastPosition then
-					if GetDistance(targetMinion, myHero) <= 1440 then
+					if distance <= 1440 * 1440 then
 						CastSpell(_Q, CastPosition.x, CastPosition.z)
 					end
 				end
 			end
-    		if Nmenu.LaneSettings.UseW and isReady(_W) then
+			if Nmenu.LaneSettings.UseW == 2 and isReady(_W) then
     			if Nmenu.LaneSettings.SelectCard == 1 and myHero:GetSpellData(_W).name == "PickACard" then
 					if (myHero.mana / myHero.maxMana > Nmenu.LaneSettings.ManaManager /100) then
-						if GetDistance(targetMinion, myHero) <= 800 then
+						if distance <= 800 * 800 then
 							toSelect[3] = true
 							CastSpell(_W)
 						end
 					elseif (myHero.mana / myHero.maxMana < Nmenu.LaneSettings.ManaManager /100) then
-						if GetDistance(targetMinion, myHero) <= 800 then
+						if distance <= 800 * 800 then
 							toSelect[2] = true
 							CastSpell(_W)
 						end
 					end
 				elseif Nmenu.LaneSettings.SelectCard == 2 and myHero:GetSpellData(_W).name == "PickACard" then
-					if GetDistance(targetMinion, myHero) <= 800 then
+					if distance <= 800 * 800 then
 						toSelect[3] = true
 						CastSpell(_W)
 					end
 				elseif Nmenu.LaneSettings.SelectCard == 3 and myHero:GetSpellData(_W).name == "PickACard" then
-					if GetDistance(targetMinion, myHero) <= 800 then
+					if distance <= 800 * 800 then
 						toSelect[2] = true
 						CastSpell(_W)
 					end
 				elseif Nmenu.LaneSettings.SelectCard == 4 and myHero:GetSpellData(_W).name == "PickACard" then
-					if GetDistance(targetMinion, myHero) <= 800 then
+					if distance <= 800 * 800 then
 						toSelect[1] = true
 						CastSpell(_W)
 					end
 				end
+			elseif Nmenu.LaneSettings.UseW == 3 and isReady(_W) then
+				if not picking then 
+					CastSpell(_W)
+				elseif picking then 
+					if target ~= nil and ValidTarget(target) and GetDistanceSqr(target) < 525 * 525 then
+						toSelect[1] = true
+					end
+					if lastRotate then
+						if Nmenu.LaneSettings.SelectCard == 1 then
+							if (myHero.mana / myHero.maxMana > Nmenu.LaneSettings.ManaManager /100) then
+								if distance <= 800 * 800 then
+									toSelect[3] = true
+								end
+							elseif (myHero.mana / myHero.maxMana < Nmenu.LaneSettings.ManaManager /100) then
+								if distance <= 800 * 800 then
+									toSelect[2] = true
+								end
+							end
+						elseif Nmenu.LaneSettings.SelectCard == 2 then
+							if distance <= 800 * 800 then
+								toSelect[3] = true
+							end
+						elseif Nmenu.LaneSettings.SelectCard == 3 then
+							if distance <= 800 * 800 then
+								toSelect[2] = true
+							end
+						elseif Nmenu.LaneSettings.SelectCard == 4 then
+							if distance <= 800 * 800 then
+								toSelect[1] = true
+							end
+						end
+					end
+				end
 			end
-    	end
-    end
+		end
+	end
 end
 
 function Jungleclear()
+	jungleMinions:update()
 	for i, jungleMinion in pairs(jungleMinions.objects) do
 		if jungleMinion ~= nil then
 			if Nmenu.JungleSettings.UseQ and isReady(_Q) then
