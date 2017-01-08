@@ -13,7 +13,15 @@ function SexyPrint(message)
   print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end
 
-local version = "0.04"
+if FileExist(LIB_PATH .. "/Config.lua") then
+  require("Config")
+else 
+    SexyPrint("Downloading Config, please don't press F9")
+    DelayAction(function() DownloadFile("https://raw.githubusercontent.com/Icesythe7/GOS/master/Config.lua".."?rand="..math.random(1,10000), LIB_PATH.."Config.lua", function () SexyPrint("Successfully downloaded Config. Press F9 twice.") end) end, 3) 
+    return
+end
+
+local version = "0.05"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/DaBomb.lua".."?rand="..math.random(1,10000)
