@@ -14,7 +14,7 @@ function SexyPrint(message)
 end 
 
 if FileExist(LIB_PATH .. "/Config.lua") then
-	require("Config")
+	--require("Config")
 else 
     SexyPrint("Downloading Config, please don't press F9")
     DelayAction(function() DownloadFile("https://raw.githubusercontent.com/Icesythe7/GOS/master/Config.lua".."?rand="..math.random(1,10000), LIB_PATH.."Config.lua", function () SexyPrint("Successfully downloaded Config. Press F9 twice.") end) end, 3) 
@@ -42,7 +42,7 @@ if not _G.UPLloaded then
   end
 end
 
-local version = "1.21"
+local version = "1.22"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/CardSlut.lua".."?rand="..math.random(1,10000)
