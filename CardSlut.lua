@@ -13,14 +13,6 @@ function SexyPrint(message)
 	print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end 
 
-if FileExist(LIB_PATH .. "/Config.lua") then
-	--require("Config")
-else 
-    SexyPrint("Downloading Config, please don't press F9")
-    DelayAction(function() DownloadFile("https://raw.githubusercontent.com/Icesythe7/GOS/master/Config.lua".."?rand="..math.random(1,10000), LIB_PATH.."Config.lua", function () SexyPrint("Successfully downloaded Config. Press F9 twice.") end) end, 3) 
-    return
-end
-
 if not _G.UOLloaded then
   if FileExist(LIB_PATH .. "/UOL.lua") then
     require("UOL")
@@ -42,7 +34,7 @@ if not _G.UPLloaded then
   end
 end
 
-local version = "1.22"
+local version = "1.23"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/CardSlut.lua".."?rand="..math.random(1,10000)
@@ -116,6 +108,8 @@ function Nmenu()
 	Nmenu:addSubMenu("[Card Slut] Laneclear Settings", "LaneSettings")
 	Nmenu.LaneSettings:addParam("UseQ", "Use Q in 'Laneclear'", SCRIPT_PARAM_ONOFF, true)
 	Nmenu.LaneSettings:addParam("UseW", "W Mode in 'Laneclear'", SCRIPT_PARAM_LIST, 3, {"Off", "On", "[Beta] Rotate"})
+	Nmenu.LaneSettings:addParam("Lenemy", "If Rotate Enemy", SCRIPT_PARAM_LIST, 1, {"Gold", "Blue", "Red"})
+	Nmenu.LaneSettings:addParam("Cenemy", "Enemy Range to Lock", SCRIPT_PARAM_SLICE, 600, 400, 1800)
 	Nmenu.LaneSettings:addParam("SelectCard", "Select card to use in 'Laneclear'", SCRIPT_PARAM_LIST, 1, {"Smart", "Red", "Blue", "Gold"})
 	Nmenu.LaneSettings:addParam("ManaManager", "Mana Manager (Blue Card) under", SCRIPT_PARAM_SLICE, 40, 0, 100, 0)
 	Nmenu.LaneSettings:addParam("ManaManager2", "Do not use (Wild Cards) under", SCRIPT_PARAM_SLICE, 40, 0, 100, 0)
@@ -214,7 +208,7 @@ function OnTick()
 		Harass()
 	end
 	if UOL:GetOrbWalkMode() == "LaneClear" then
-		Laneclear()
+		WLaneclear()
 		Jungleclear()
 	end
 	if igniteFound and Nmenu.Misc.ign then
@@ -254,17 +248,6 @@ function OnUpdateBuff(unit, buff)
 	end
 	if tcc ~= nil and unit ~= nil and unit.charName == tcc and unit.valid and unit.type == myHero.type and unit.team ~= myHero.team and not t[buff.type] then
 		tcc = nil
-	end
-	if unit ~= nil and buff ~= nil and unit.isMe then
-		if buff.name == "pickacard_tracker" then 
-			picking = true
-			DelayAction(function() lastRotate = true end, 3.75)
-		end
-		if buff.name:find("CardPreAttack") then
-			locked = true
-			toSelect = {false, false, false}
-			lastRotate = false
-		end
 	end
 end
 
@@ -379,9 +362,24 @@ function Harass()
 	end
 end
 
+function WLaneclear()
+	local target = GetTarget(1500)
+	if Nmenu.LaneSettings.UseW == 3 and isReady(_W) and not picking then
+		CastSpell(_W)
+	elseif Nmenu.LaneSettings.UseW == 3 and picking then 
+		if target ~= nil and ValidTarget(target) and GetDistanceSqr(target) < Nmenu.LaneSettings.Cenemy * Nmenu.LaneSettings.Cenemy then
+			UOL:ForceTarget(target)
+			toSelect[Nmenu.LaneSettings.Lenemy] = true
+		else
+			Laneclear()
+		end
+	else
+		Laneclear()
+	end
+end
+
 function Laneclear()
 	targetMinions:update()
-	local target = GetTarget(1500)
 	for i, targetMinion in pairs(targetMinions.objects) do
 		if targetMinion ~= nil and ValidTarget(targetMinion) then
 			local distance = GetDistanceSqr(targetMinion)
@@ -423,35 +421,30 @@ function Laneclear()
 					end
 				end
 			elseif Nmenu.LaneSettings.UseW == 3 and isReady(_W) then
-				if not picking then 
+				if not picking and isReady(_W) then 
 					CastSpell(_W)
-				elseif picking then 
-					if target ~= nil and ValidTarget(target) and GetDistanceSqr(target) < 525 * 525 then
-						toSelect[1] = true
-					end
-					if lastRotate then
-						if Nmenu.LaneSettings.SelectCard == 1 then
-							if (myHero.mana / myHero.maxMana > Nmenu.LaneSettings.ManaManager /100) then
-								if distance <= 800 * 800 then
-									toSelect[3] = true
-								end
-							elseif (myHero.mana / myHero.maxMana < Nmenu.LaneSettings.ManaManager /100) then
-								if distance <= 800 * 800 then
-									toSelect[2] = true
-								end
-							end
-						elseif Nmenu.LaneSettings.SelectCard == 2 then
+				elseif picking and lastRotate then 
+					if Nmenu.LaneSettings.SelectCard == 1 then
+						if (myHero.mana / myHero.maxMana > Nmenu.LaneSettings.ManaManager /100) then
 							if distance <= 800 * 800 then
 								toSelect[3] = true
 							end
-						elseif Nmenu.LaneSettings.SelectCard == 3 then
+						elseif (myHero.mana / myHero.maxMana < Nmenu.LaneSettings.ManaManager /100) then
 							if distance <= 800 * 800 then
 								toSelect[2] = true
 							end
-						elseif Nmenu.LaneSettings.SelectCard == 4 then
-							if distance <= 800 * 800 then
-								toSelect[1] = true
-							end
+						end
+					elseif Nmenu.LaneSettings.SelectCard == 2 then
+						if distance <= 800 * 800 then
+							toSelect[3] = true
+						end
+					elseif Nmenu.LaneSettings.SelectCard == 3 then
+						if distance <= 800 * 800 then
+							toSelect[2] = true
+						end
+					elseif Nmenu.LaneSettings.SelectCard == 4 then
+						if distance <= 800 * 800 then
+							toSelect[1] = true
 						end
 					end
 				end
@@ -508,6 +501,15 @@ end
 
 function OnProcessSpell(unit, spell)
 	if unit.isMe then
+		if spell.name == "PickACard" then
+			picking = true
+			DelayAction(function() if picking then lastRotate = true end end, 3.75)
+		elseif (spell.name == "GoldCardLock" or spell.name == "RedCardLock" or spell.name == "BlueCardLock") then
+			locked = true
+			picking = false 
+			lastRotate = false
+			toSelect = {false, false, false}
+		end
 		if spell.name == "Destiny" then
 			CastingUltimate = true
 			if Nmenu.UltSettings.RCast == 1 then
