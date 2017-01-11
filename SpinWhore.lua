@@ -13,7 +13,7 @@ function SexyPrint(message)
 	print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end 
 
-local version = "0.02"
+local version = "0.03"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/SpinWhore.lua".."?rand="..math.random(1,10000)
@@ -55,7 +55,7 @@ local qActive = false
 local eActive = false
 local skinMeta = 
 {
-	["Garen"] = {"Classic", "Sanguine", "Desert Trooper", "Commando", "Dreadknight", "Rugged", "Steel Legion", "Chroma Pack: Garnet", "Chroma Pack: Plum", "Chroma Pack: Ivory", "Rogue Admiral"}
+	["Garen"] = {"Classic", "Sanguine", "Desert Trooper", "Commando", "Dreadknight", "Rugged", "Steel Legion", "Chroma Pack: Garnet", "Chroma Pack: Plum", "Chroma Pack: Ivory", "Rogue Admiral", "Warring Kingdoms"}
 }
 local rPercent = 
 {
