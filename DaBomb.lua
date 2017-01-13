@@ -13,15 +13,7 @@ function SexyPrint(message)
   print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end
 
-if FileExist(LIB_PATH .. "/Config.lua") then
-  --require("Config")
-else 
-    SexyPrint("Downloading Config, please don't press F9")
-    DelayAction(function() DownloadFile("https://raw.githubusercontent.com/Icesythe7/GOS/master/Config.lua".."?rand="..math.random(1,10000), LIB_PATH.."Config.lua", function () SexyPrint("Successfully downloaded Config. Press F9 twice.") end) end, 3) 
-    return
-end
-
-local version = "0.06"
+local version = "0.07"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/DaBomb.lua".."?rand="..math.random(1,10000)
@@ -47,6 +39,16 @@ if AUTOUPDATE then
   end
 end
 
+if not _G.UOLloaded then
+  if FileExist(LIB_PATH .. "/UOL.lua") then
+      require("UOL")
+    else 
+      SexyPrint("Downloading UOL, please don't press F9")
+      DelayAction(function() DownloadFile("https://raw.github.com/nebelwolfi/BoL/master/Common/UOL.lua".."?rand="..math.random(1,10000), LIB_PATH.."UOL.lua", function () SexyPrint("Successfully downloaded UOL. Press F9 twice.") end) end, 3) 
+      return
+    end
+end
+
 if not _G.UPLloaded then
   if FileExist(LIB_PATH .. "/UPL.lua") then
     require("UPL")
@@ -62,7 +64,8 @@ UPL:AddSpell(_Q, { speed = 1700, delay = 0.25, range = 850, width = 140, collisi
 UPL:AddSpell(_Q -1, { speed = 1700, delay = 0.25, range = 1400, width = 140, collision = false, aoe = true, type = "circular" })
 UPL:AddSpell(_W, { speed = 1750, delay = 0.25, range = 1000, width = 325, collision = false, aoe = true, type = "circular" })
 UPL:AddSpell(_E, { speed = 1750, delay = 0.25, range = 900, width = 325, collision = false, aoe = true, type = "circular" })
-UPL:AddSpell(_R, { speed = math.huge, delay = 0.375, range = 5000, width = 550, collision = false, aoe = true, type = "circular" })
+UPL:AddSpell(_R, { speed = 1550, delay = 0.375, range = 5000, width = 450, collision = false, aoe = true, type = "circular" }) --< 2000 units
+UPL:AddSpell(_R -8, { speed = math.huge, delay = 1.575, range = 1999, width = 450, collision = false, aoe = true, type = "circular" }) --> 2000 units
 
 local jungleMinions = minionManager(MINION_JUNGLE, 850, myHero, MINION_SORT_MAXHEALTH_DEC)
 local targetMinions = minionManager(MINION_ENEMY, 1400, myHero, MINION_SORT_MAXHEALTH_DEC)
@@ -82,9 +85,68 @@ local DashStartTime = nil
 local EStart = nil
 local GetDash = false
 local dashKnown = false
+local pSlot = true
 local skinMeta =
 {
   ["Ziggs"] = {"Classic", "Mad Scientist", "Major", "Pool Party", "Snow Day", "Master Arcanist"}
+}
+local pScale = 
+{
+  [1] = {base = 20, ap = myHero.ap * 0.3},
+  [2] = {base = 24, ap = myHero.ap * 0.3},
+  [3] = {base = 28, ap = myHero.ap * 0.3},
+  [4] = {base = 32, ap = myHero.ap * 0.3},
+  [5] = {base = 36, ap = myHero.ap * 0.3},
+  [6] = {base = 40, ap = myHero.ap * 0.3},
+  [7] = {base = 48, ap = myHero.ap * 0.4},
+  [8] = {base = 56, ap = myHero.ap * 0.4},
+  [9] = {base = 64, ap = myHero.ap * 0.4},
+  [10] = {base = 72, ap = myHero.ap * 0.4},
+  [11] = {base = 80, ap = myHero.ap * 0.4},
+  [12] = {base = 88, ap = myHero.ap * 0.4},
+  [13] = {base = 100, ap = myHero.ap * 0.5},
+  [14] = {base = 112, ap = myHero.ap * 0.5},
+  [15] = {base = 124, ap = myHero.ap * 0.5},
+  [16] = {base = 136, ap = myHero.ap * 0.5},
+  [17] = {base = 148, ap = myHero.ap * 0.5},
+  [18] = {base = 160, ap = myHero.ap * 0.5}
+}
+local spellDmg = 
+{
+  ["_P"] =
+  function(unit)
+    if isReady(_P) then
+      return myHero:CalcMagicDamage(unit, (pScale[myHero.level].base + pScale[myHero.level].ap))
+    end
+  end,
+
+  [_Q] =
+  function(unit)
+    if isReady(_Q) then
+      return myHero:CalcMagicDamage(unit, (((myHero:GetSpellData(_Q).level * 45) + 30) + (myHero.ap * 0.65)))
+    end
+  end,
+
+  [_W] =
+  function(unit)
+    if isReady(_W) then
+      return myHero:CalcMagicDamage(unit, (((myHero:GetSpellData(_W).level * 35) + 35) + (myHero.ap * 0.35)))
+    end
+  end,
+
+  [_E] =
+  function(unit)
+    if isReady(_E) then
+      return myHero:CalcMagicDamage(unit, (((myHero:GetSpellData(_E).level * 25) + 15) + (myHero.ap * 0.3)))
+    end
+  end,
+
+  [_R] =
+  function(unit)
+    if isReady(_R) then
+      return myHero:CalcMagicDamage(unit, (((((myHero:GetSpellData(_R).level * 150) + 150) + (myHero.ap * 1.1)) / 3) * 2)) --outter radius 
+    end
+  end
 }
 
 --credits Deftsu--
@@ -180,6 +242,7 @@ function Ziggs()
   Tmenu.ComboSettings:addParam("UseQ", "Use Q in 'Combo'", SCRIPT_PARAM_ONOFF, true)
   Tmenu.ComboSettings:addParam("UseW", "Use W in 'Combo'", SCRIPT_PARAM_ONOFF, false)
   Tmenu.ComboSettings:addParam("UseE", "Use E in 'Combo'", SCRIPT_PARAM_ONOFF, true)
+  Tmenu.ComboSettings:addParam("UseR", "Use R in 'Combo' if will Kill", SCRIPT_PARAM_ONOFF, true)
 
   Tmenu:addSubMenu("[Da Bomb] Harass Settings", "HarassSettings")
   Tmenu.HarassSettings:addParam("UseQ", "Auto Q 'Harass'", SCRIPT_PARAM_ONKEYTOGGLE, false, GetKey("L"))
@@ -206,8 +269,8 @@ function Ziggs()
   Tmenu.Misc:addParam("pull", "Pull Target", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("T"))
   Tmenu.Misc:addParam("push", "Push Target", SCRIPT_PARAM_ONKEYDOWN, false, GetKey("Z"))
   Tmenu.Misc:addParam("exe", "Auto Execute Towers", SCRIPT_PARAM_ONOFF, true)
-  Tmenu.Misc:addParam("UseR", "R Killsteal(not recommended)", SCRIPT_PARAM_ONOFF, false)
-  Tmenu.Misc:addParam("RRange", "R KS Max Range", SCRIPT_PARAM_SLICE, 2000, 0, 5000)
+  Tmenu.Misc:addParam("UseR", "R Killsteal", SCRIPT_PARAM_ONOFF, false)
+  Tmenu.Misc:addParam("RRange", "R KS Max Range", SCRIPT_PARAM_SLICE, 1999, 0, 5000)
   Tmenu.Misc:addParam("skins", myHero.charName .. " Skins", SCRIPT_PARAM_LIST, 1, skinMeta[myHero.charName])
   Tmenu.Misc:setCallback("skins", StartSkin)
 
@@ -226,42 +289,14 @@ function Ziggs()
   Tmenu.Drawing:addParam("Rrange", "Draw R", SCRIPT_PARAM_ONOFF, false)
   Tmenu.Drawing:addParam("Rcolor", "--> R Range Color", SCRIPT_PARAM_COLOR, {255, 186, 85, 211})
   Tmenu.Drawing:addParam("info2", " ", SCRIPT_PARAM_INFO, "")
+  Tmenu.Drawing:addParam("eDamage", "Draw Enemy Damage", SCRIPT_PARAM_ONOFF, true)
+
   Tmenu:addSubMenu("[Da Bomb] Prediction", "pred")
   UPL:AddToMenu(Tmenu.pred)
 
   Tmenu:addSubMenu("[Da Bomb] Orbwalker", "Orbwalker")
+  UOL:AddToMenu(Tmenu.Orbwalker)
 end
-
---Credits Ralphlol--
-function CheckOrbwalk()
-  if _G.Reborn_Loaded and not _G.Reborn_Initialised then
-    DelayAction(CheckOrbwalk, 1)
-  elseif _G.Reborn_Initialised then
-    Tmenu.Orbwalker:addParam("info11","SAC Detected", SCRIPT_PARAM_INFO, "")
-    sacUsed = true
-  elseif _G.MMA_IsLoaded then
-    Tmenu.Orbwalker:addParam("info11","MMA Detected", SCRIPT_PARAM_INFO, "")
-    mmaUsed = true
-  elseif _Pewalk then
-    Tmenu.Orbwalker:addParam("info11","Pewalk Detected", SCRIPT_PARAM_INFO, "")
-    pewUsed = true
-  elseif _G.NebelwolfisOrbWalkerLoaded then
-    Tmenu.Orbwalker:addParam("info11","Nebel Orb Detected", SCRIPT_PARAM_INFO, "")
-    norbUsed = true
-  else
-    if FileExist(LIB_PATH.."Nebelwolfi's Orb Walker.lua") then
-      require "Nebelwolfi's Orb Walker"
-      if NebelwolfisOrbWalkerClass then
-        NebelwolfisOrbWalkerClass(Tmenu.Orbwalker)
-        norbUsed = true
-      end
-    else
-      SexyPrint("Download an orbwalker to use the script!")
-    end
-  end
-end
-
-DelayAction(CheckOrbwalk, 4)
 
 function OnLoad()
   Ziggs()
@@ -294,7 +329,11 @@ function StartSkin()
 end
 
 function isReady(slot)
-  return myHero:CanUseSpell(slot) == READY
+  if slot == _P then
+    return pSlot
+  else
+    return myHero:CanUseSpell(slot) == READY
+  end
 end
 
 function isLevel(slot)
@@ -306,86 +345,43 @@ function isLevel(slot)
 end
 
 function isBetween(min, max, unit, unit2)
-  local distance = GetDistance(unit, unit2)
-  if distance >= min and distance <= max then
+  local distance = GetDistanceSqr(unit, unit2)
+  if distance >= min * min and distance <= max * max then
     return true
   else
     return false
   end
 end
 
-function GetDamage(Spell, Unit)
-  local truedamage = 0
-  if Spell == _Q and isReady(_Q) then
-    truedamage = myHero:CalcMagicDamage(Unit, (((myHero:GetSpellData(_Q).level * 45) + 30) + (myHero.ap * 0.65)))
-  elseif Spell == _W and isReady(_W) then
-    truedamage = myHero:CalcMagicDamage(Unit, (((myHero:GetSpellData(_W).level * 35) + 35) + (myHero.ap * 0.35)))
-  elseif Spell == _E and isReady(_E) then
-    truedamage = myHero:CalcMagicDamage(Unit, (((myHero:GetSpellData(_E).level * 25) + 15) + (myHero.ap * 0.3)))
-  elseif Spell == _R and isReady(_R) then
-    truedamage = myHero:CalcMagicDamage(Unit, (((myHero:GetSpellData(_R).level * 100) + 100) + (myHero.ap * 0.733)))
-  end
-  return truedamage
-end
-
-function isCombo()
-  if sacUsed and _G.AutoCarry.Keys.AutoCarry then
-    return true
-  elseif sxorbUsed and SxOrb.isFight then
-    return true
-  elseif mmaUsed and _G.MMA_IsOrbwalking() then
-    return true
-  elseif norbUsed and _G.NebelwolfisOrbWalker.Config.k.Combo then
-    return true
-  elseif pewUsed and _Pewalk.GetActiveMode()["Carry"] then
-    return true
+function GetDamage(spell, unit)
+  if spell == "ALL" then
+    local sum = 0
+    for spell, func in pairs(spellDmg) do
+      sum = sum + (func(unit) or 0)
+    end
+    return sum
   else
-    return false
+    return spellDmg[spell](unit) or 0
   end
 end
 
-function isHarass()
-  if sacUsed and _G.AutoCarry.Keys.MixedMode then
-    return true
-  elseif sxorbUsed and SxOrb.isHarass then
-    return true
-  elseif mmaUsed and _G.MMA_IsDualCarrying() then
-    return true
-  elseif norbUsed and _G.NebelwolfisOrbWalker.Config.k.Harass then
-    return true
-  elseif pewUsed and _Pewalk.GetActiveMode()["Mixed"] then
-    return true
-  else
-    return false
-  end
-end
-
-function isLaneclear()
-  if sacUsed and _G.AutoCarry.Keys.LaneClear then
-    return true
-  elseif sxorbUsed and SxOrb.isLaneClear then
-    return true
-  elseif mmaUsed and _G.MMA_IsLaneClearing() then
-    return true
-  elseif norbUsed and _G.NebelwolfisOrbWalker.Config.k.LaneClear then
-    return true
-  elseif pewUsed and _Pewalk.GetActiveMode()["LaneClear"] then
-    return true
-  else
-    return false
-  end
-end
-
-function GetBombableTarget(range)
-  if sacUsed then
+function GetTarget(range)
+  local orb = UOL:GetActiveOrb()
+  if orb == "Pewalk" then
+    return _Pewalk.GetTarget(range)
+  elseif orb == "SAC" then 
     _G.AutoCarry.Crosshair:SetSkillCrosshairRange(range)
     return _G.AutoCarry.SkillsCrosshair.target
-  elseif mmaUsed then
+  elseif orb == "MMA" then
     return _G.MMA_Target(range)
-  elseif norbUsed then
-    return _G.NebelwolfisOrbWalker:GetTarget(range)
-  elseif pewUsed then
-    return _Pewalk.GetTarget(range)
+  elseif orb == "NOW" then
+    return _G.NebelwolfisOrbWalker:GetTarget() 
+  elseif orb == "SxOrb" then 
+    return SxOrb:GetTarget(range) 
+  elseif orb == "SOW" then 
+    return SOWVP:GetTarget(range) 
+  elseif orb == "BFW" then 
+    return Orbwalk_GetTarget(range) 
   else
     return nil
   end
@@ -455,14 +451,25 @@ function OnDeleteObj(o)
   end
 end
 
+function OnUpdateBuff(unit, buff)
+  if unit ~= nil and unit.isMe and buff.name == "ZiggsShortFuse" then
+    pSlot = true
+  end
+end
+
+function OnRemoveBuff(unit, buff)
+  if unit ~= nil and unit.isMe and buff.name == "ZiggsShortFuse" then
+    pSlot = false
+  end
+end
+
 function OnTick()
   if myHero.dead then
     return
   end
-  if isCombo() then
+  if UOL:GetOrbWalkMode() == "Combo" then
     Combo()
-  end
-  if isLaneclear() then
+  elseif UOL:GetOrbWalkMode() == "LaneClear" then
     Laneclear()
     Jungleclear()
   end
@@ -557,7 +564,7 @@ end
 function WHandler()
   if Tmenu.Misc.pull and isReady(_W) then
     local target = GetBombableTarget(1000)
-    if target ~= nil and ValidTarget(target) and GetDistance(target) < 950 then
+    if target ~= nil and ValidTarget(target) and GetDistance(target) < 900 then
       PullWithW(target)
     end
   end
@@ -583,13 +590,19 @@ function OnNewPath(unit, startpos, endpos, isDash, dashSpeed)
 end
 
 function KillSteal()
-  for _, enemy in pairs(GetEnemyHeroes()) do
+  for _, enemy in pairs(sEnemies) do
     local realHPi = (enemy.health + (enemy.hpRegen * 0.05))
-    if enemy and ValidTarget(enemy) and GetDistance(enemy) < Tmenu.Misc.RRange and GetDamage(_R, enemy) > realHPi then
+    local distance = GetDistanceSqr(enemy)
+    if enemy and ValidTarget(enemy) and distance <= 1999 * 1999 and  distance <= Tmenu.Misc.RRange * Tmenu.Misc.RRange and GetDamage(_R, enemy) > realHPi then
       local CastPosition, HitChance, HeroPosition = UPL:Predict(_R, myHero, enemy)
       if CastPosition and HitChance > 0 then
-        CastSpell(_R, CastPosition.x, CastPosition.z)
+          CastSpell(_R, CastPosition.x, CastPosition.z)
       end
+    elseif enemy and ValidTarget(enemy) and distance <= 5000 * 5000 and  distance <= Tmenu.Misc.RRange * Tmenu.Misc.RRange and GetDamage(_R, enemy) > realHPi then
+        local CastPosition, HitChance, HeroPosition = UPL:Predict(_R -8, myHero, enemy)
+        if CastPosition and HitChance > 0 then
+          CastSpell(_R, CastPosition.x, CastPosition.z)
+        end
     end
   end
 end
@@ -606,17 +619,23 @@ function OnProcessSpell(unit, spell)
 end
 
 function Combo()
-  local target = GetBombableTarget()
+  local target = GetTarget(900)
   local distance = GetDistance(myHero, target)
   if CountEnemyHeroInRange(1200, myHero) == 1 and Tmenu.ComboSettings.UseE and Tmenu.ComboSettings.UseQ and Tmenu.ComboSettings.UseW and isReady(_Q) and isReady(_W) and isReady(_E) then
-    local target = GetBombableTarget(1450)
+    local target = GetTarget(1450)
     local distance = GetDistance(myHero, target)
-    if target ~= nil and ValidTarget(target) and distance < 950 then
+    if target ~= nil and ValidTarget(target) and distance < 900 then
       PullWithW(target)
       if dashKnown then
         CastSpell(_E, dashx, dashz)
         DelayAction(function() CastSpell(_Q, dashx, dashz) end, 0.1)
       end
+    end
+  end
+  if target ~= nil and ValidTarget(target) and Tmenu.ComboSettings.UseR and isReady(_R) and distance <= 1999 and GetDamage(_R, target) > target.health then
+    local CastPosition, HitChance, HeroPosition = UPL:Predict(_R, myHero, target)
+    if CastPosition and HitChance > 0 then
+      CastSpell(_R, CastPosition.x, CastPosition.z)
     end
   end
   if target ~= nil and ValidTarget(target) and Tmenu.ComboSettings.UseE and isReady(_E) and distance < 900 then
@@ -626,7 +645,7 @@ function Combo()
     end
   end
   if isReady(_Q) then
-    local target = GetBombableTarget(1450)
+    local target = GetTarget(1450)
     local distance = GetDistance(myHero, target)
     if target ~= nil and ValidTarget(target) and Tmenu.ComboSettings.UseQ and distance < 850 then
       local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q, myHero, target)
@@ -652,7 +671,7 @@ function Combo()
 end
 
 function Harass()
-  local target = GetBombableTarget(1450)
+  local target = GetTarget(1450)
   local distance = GetDistance(myHero, target)
   if target ~= nil and ValidTarget(target) and distance < 850 then
     local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q, myHero, target)
@@ -726,6 +745,23 @@ function Jungleclear()
   end
 end
 
+function GetHPBarPos(enemy)
+    enemy.barData = {PercentageOffset = {x = -0.05, y = 0}}
+    local barPos = GetUnitHPBarPos(enemy)
+    local barPosOffset = GetUnitHPBarOffset(enemy)
+    local barOffset = { x = enemy.barData.PercentageOffset.x, y = enemy.barData.PercentageOffset.y }
+    local barPosPercentageOffset = { x = enemy.barData.PercentageOffset.x, y = enemy.barData.PercentageOffset.y }
+    local BarPosOffsetX = -50
+    local BarPosOffsetY = 46
+    local CorrectionY = 39
+    local StartHpPos = 31 
+    barPos.x = math.floor(barPos.x + (barPosOffset.x - 0.5 + barPosPercentageOffset.x) * BarPosOffsetX + StartHpPos)
+    barPos.y = math.floor(barPos.y + (barPosOffset.y - 0.5 + barPosPercentageOffset.y) * BarPosOffsetY + CorrectionY)
+    local StartPos = Vector(barPos.x , barPos.y, 0)
+    local EndPos = Vector(barPos.x + 108 , barPos.y , 0)    
+    return Vector(StartPos.x, StartPos.y, 0), Vector(EndPos.x, EndPos.y, 0)
+end
+
 function DrawCircleNextLvl(x, y, z, radius, width, color, chordlength)
   radius = radius or 300
   quality = math.max(8,math.floor(180/math.deg((math.asin((chordlength/(2*radius)))))))
@@ -793,6 +829,52 @@ function OnDraw()
       DrawCircle(myHero.x, myHero.y, myHero.z, 5000, ARGB(Tmenu.Drawing.Rcolor[1], Tmenu.Drawing.Rcolor[2], Tmenu.Drawing.Rcolor[3], Tmenu.Drawing.Rcolor[4]))
     elseif Tmenu.Drawing.Rrange and not isReady(_R) and isLevel(_R) then
       DrawCircle(myHero.x, myHero.y, myHero.z, 5000, ARGB(255,255,0,0))
+    end
+  end
+  if Tmenu.Drawing.eDamage then
+    for i, enemy in pairs(sEnemies) do
+      if enemy and enemy.visible and not enemy.dead then
+        local myDmg = GetDamage("ALL", enemy)
+        local textLabel = nil
+        local line = 2
+        local linePosA  = {x = 0, y = 0 }
+        local linePosB  = {x = 0, y = 0 }
+        local TextPos   = {x = 0, y = 0 }
+        local p = WorldToScreen(D3DXVECTOR3(enemy.x, enemy.y, enemy.z))
+        if OnScreen(p.x, p.y) then
+          if myDmg >= enemy.health then
+            myDmg = enemy.health - 1
+            textLabel = "Killable"
+          else
+            textLabel = "Damage"
+          end
+          myDmg = math.round(myDmg)
+          local StartPos, EndPos = GetHPBarPos(enemy)
+          local Real_X = StartPos.x + 24
+          local Offs_X = (Real_X + ((enemy.health - myDmg) / enemy.maxHealth) * (EndPos.x - StartPos.x - 2))
+          if Offs_X < Real_X then
+            Offs_X = Real_X 
+          end 
+          local mytrans = 350 - math.round(255*((enemy.health-myDmg)/enemy.maxHealth))
+          if mytrans >= 255 then 
+            mytrans = 254 
+          end
+          local my_bluepart = math.round(400*((enemy.health-myDmg)/enemy.maxHealth))
+          if my_bluepart >= 255 then 
+            my_bluepart = 254 
+          end
+          linePosA.x = Offs_X-150
+          linePosA.y = (StartPos.y-(30+(line*15)))    
+          linePosB.x = Offs_X-150
+          linePosB.y = (StartPos.y-10)
+          TextPos.x = Offs_X-148
+          TextPos.y = (StartPos.y-(30+(line*15)))
+          if myDmg > 0 then
+            DrawLine(linePosA.x, linePosA.y, linePosB.x, linePosB.y, 1, ARGB(mytrans, 255, my_bluepart, 0))
+            DrawText(tostring(myDmg).." "..tostring(textLabel), 15, TextPos.x, TextPos.y , ARGB(mytrans, 255, my_bluepart, 0))
+          end
+        end
+      end
     end
   end
 end
