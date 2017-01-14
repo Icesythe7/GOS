@@ -13,7 +13,7 @@ function SexyPrint(message)
   print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end
 
-local version = "0.07"
+local version = "0.08"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/DaBomb.lua".."?rand="..math.random(1,10000)
@@ -563,13 +563,13 @@ end
 
 function WHandler()
   if Tmenu.Misc.pull and isReady(_W) then
-    local target = GetBombableTarget(1000)
+    local target = GetTarget(1000)
     if target ~= nil and ValidTarget(target) and GetDistance(target) < 900 then
       PullWithW(target)
     end
   end
   if Tmenu.Misc.push and isReady(_W) then
-    local target = GetBombableTarget(950)
+    local target = GetTarget(950)
     if target ~= nil and ValidTarget(target) and GetDistance(target) < 1000 then
       PushWithW(target)
     end
