@@ -13,7 +13,7 @@ function SexyPrint(message)
   print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end
 
-local version = "0.08"
+local version = "0.09"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/DaBomb.lua".."?rand="..math.random(1,10000)
@@ -150,66 +150,6 @@ local spellDmg =
 }
 
 --credits Deftsu--
-local antiGapClosers =
-{
-  ["AatroxQ"]                        = {Name = "Aatrox",       spellname = "Q | Dark Flight"},
-  ["AhriTumble"]                     = {Name = "Ahri",         spellname = "R | Spirit Rush"},
-  ["AkaliShadowDance"]               = {Name = "Akali",        spellname = "R | Shadow Dance"},
-  ["AlphaStrike"]                    = {Name = "MasterYi",     spellname = "Q | Alpha Strike"},
-  ["BandageToss"]                    = {Name = "Amumu",        spellname = "Q | Bandage Toss"},
-  ["Crowstorm"]                      = {Name = "FiddleSticks", spellname = "R | Crowstorm "},
-  ["DianaTeleport"]                  = {Name = "Diana",        spellname = "R | Lunar Rush"},
-  ["EliseSpiderEDescent"]            = {Name = "Elise",        spellname = "E | Rappel"},
-  ["EliseSpiderQCast"]               = {Name = "Elise",        spellname = "Q | Venomous Bite"},
-  ["FioraQ"]                         = {Name = "Fiora",        spellname = "Q | Lunge"},
-  ["FizzPiercingStrike"]             = {Name = "Fizz",         spellname = "E | Urchin Strike"},
-  ["GarenQ"]                         = {Name = "Garen",        spellname = "Q | Decisive Strike"},
-  ["GnarBigE"]                       = {Name = "Gnar",         spellname = "E | Crunch"},
-  ["GnarE"]                          = {Name = "Gnar",         spellname = "E | Hop"},
-  ["GragasE"]                        = {Name = "Gragas",       spellname = "E | Body Slam"},
-  ["GravesMove"]                     = {Name = "Graves",       spellname = "E | Quickdraw"},
-  ["Headbutt"]                       = {Name = "Alistar",      spellname = "W | Headbutt"},
-  ["HecarimUlt"]                     = {Name = "Hecarim",      spellname = "R | Onslaught of Shadows"},
-  ["IreliaGatotsu"]                  = {Name = "Irelia",       spellname = "Q | Bladesurge"},
-  ["JarvanIVCataclysm"]              = {Name = "JarvanIV",     spellname = "R | Cataclysm"},
-  ["JarvanIVDragonStrike"]           = {Name = "JarvanIV",     spellname = "Q | Dragon Strike"},
-  ["JaxLeapStrike"]                  = {Name = "Jax",          spellname = "Q | Leap Strike"},
-  ["JayceToTheSkies"]                = {Name = "Jayce",        spellname = "W | To The Skies!"},
-  ["KatarinaE"]                      = {Name = "Katarina",     spellname = "E | Shunpo"},
-  ["KennenLightningRush"]            = {Name = "Kennen",       spellname = "E | Lightning Rush"},
-  ["KhazixE"]                        = {Name = "Khazix",       spellname = "E | Leap"},
-  ["LeblancSlide"]                   = {Name = "Leblanc",      spellname = "W | Distortion"},
-  ["LeblancSlideM"]                  = {Name = "Leblanc",      spellname = "R | Distortion"},
-  ["LeonaZenithBlade"]               = {Name = "Leona",        spellname = "E | Zenith Blade"},
-  ["LissandraE"]                     = {Name = "Lissandra",    spellname = "E | Glacial Path"},
-  ["LucianE"]                        = {Name = "Lucian",       spellname = "E | Relentless Pursuit"},
-  ["MaokaiUnstableGrowth"]           = {Name = "Maokai",       spellname = "W | Twisted Advance"},
-  ["MonkeyKingNimbus"]               = {Name = "MonkeyKing",   spellname = "E | Nimbus Strike"},
-  ["NautilusAnchorDrag"]             = {Name = "Nautilus",     spellname = "Q | Dredge Line"},
-  ["Pantheon_LeapBash"]              = {Name = "Pantheon",     spellname = "W | Aegis of Zeonia"},
-  ["PoppyHeroicCharge"]              = {Name = "Poppy",        spellname = "E | Heroic Charge"},
-  ["QuinnE"]                         = {Name = "Quinn",        spellname = "E | Vault"},
-  ["RenektonSliceAndDice"]           = {Name = "Renekton",     spellname = "E | Slice"},
-  ["RiftWalk"]                       = {Name = "Kassadin",     spellname = "R | Riftwalk"},
-  ["RivenTriCleave"]                 = {Name = "Riven",        spellname = "Q | Broken Wings"},
-  ["RocketJump"]                     = {Name = "Tristana",     spellname = "W | Rocket Jump"},
-  ["SejuaniArcticAssault"]           = {Name = "Sejuani",      spellname = "Q | Arctic Assault"},
-  ["ShenShadowDash"]                 = {Name = "Shen",         spellname = "E | Shadow Dash"},
-  ["TalonCutThroat"]                 = {Name = "Talon",        spellname = "E | Cutthroat"},
-  ["UFSlash"]                        = {Name = "Malphite",     spellname = "R | Unstoppable Force"},
-  ["UdyrBearStance"]                 = {Name = "Udyr",         spellname = "E | Bear Stance"},
-  ["Valkyrie"]                       = {Name = "Corki",        spellname = "W | Valkyrie"},
-  ["ViQ"]                            = {Name = "Vi",           spellname = "Q | Vault Breaker"},
-  ["VolibearQ"]                      = {Name = "Volibear",     spellname = "Q | Rolling Thunder"},
-  ["XenZhaoSweep"]                   = {Name = "XinZhao",      spellname = "E | Crescent Sweep"},
-  ["YasuoDashWrapper"]               = {Name = "Yasuo",        spellname = "E | Sweeping Blade"},
-  ["blindmonkqtwo"]                  = {Name = "LeeSin",       spellname = "Q | Resonating Strike"},
-  ["khazixelong"]                    = {Name = "Khazix",       spellname = "E | Leap"},
-  ["reksaieburrowed"]                = {Name = "RekSai",       spellname = "E | Tunnel"},
-  ["TryndamereE"]                    = {Name = "Tryndamere",   spellname = "E | Spinning Slash"}
-}
-
---credits Deftsu--
 local autoInterupt =
 {
   ["CaitlynAceintheHole"]         = {Name = "Caitlyn",      spellname = "R | Ace in the Hole"},
@@ -242,7 +182,8 @@ function Ziggs()
   Tmenu.ComboSettings:addParam("UseQ", "Use Q in 'Combo'", SCRIPT_PARAM_ONOFF, true)
   Tmenu.ComboSettings:addParam("UseW", "Use W in 'Combo'", SCRIPT_PARAM_ONOFF, false)
   Tmenu.ComboSettings:addParam("UseE", "Use E in 'Combo'", SCRIPT_PARAM_ONOFF, true)
-  Tmenu.ComboSettings:addParam("UseR", "Use R in 'Combo' if will Kill", SCRIPT_PARAM_ONOFF, true)
+  Tmenu.ComboSettings:addParam("rMode", "R Mode", SCRIPT_PARAM_LIST, 1, {"Off", "Can Kill", "#Enemies", "Both"})
+  Tmenu.ComboSettings:addParam("rMode2", "#Enemies to Ult", SCRIPT_PARAM_SLICE, 3, 1, 5)
 
   Tmenu:addSubMenu("[Da Bomb] Harass Settings", "HarassSettings")
   Tmenu.HarassSettings:addParam("UseQ", "Auto Q 'Harass'", SCRIPT_PARAM_ONKEYTOGGLE, false, GetKey("L"))
@@ -260,8 +201,6 @@ function Ziggs()
   Tmenu.JungleSettings:addParam("UseW", "Use W in 'Jungle'", SCRIPT_PARAM_ONOFF, false)
   Tmenu.JungleSettings:addParam("UseE", "Use E in 'Jungle'", SCRIPT_PARAM_ONOFF, true)
 
-  Tmenu:addSubMenu("[Da Bomb] Anti-GapClosers", "anti")
-
   Tmenu:addSubMenu("[Da Bomb] Auto-Interupts", "auto")
 
   Tmenu:addSubMenu("[Da Bomb] Misc", "Misc")
@@ -271,6 +210,9 @@ function Ziggs()
   Tmenu.Misc:addParam("exe", "Auto Execute Towers", SCRIPT_PARAM_ONOFF, true)
   Tmenu.Misc:addParam("UseR", "R Killsteal", SCRIPT_PARAM_ONOFF, false)
   Tmenu.Misc:addParam("RRange", "R KS Max Range", SCRIPT_PARAM_SLICE, 1999, 0, 5000)
+  Tmenu.Misc:addParam("UseW", "W Killsteal", SCRIPT_PARAM_ONOFF, false)
+  Tmenu.Misc:addParam("UseSafeW", "Auto W Enemy Too Close", SCRIPT_PARAM_ONOFF, true)
+  Tmenu.Misc:addParam("safeWRange", "W Safe Range", SCRIPT_PARAM_SLICE, 350, 0, 1000)
   Tmenu.Misc:addParam("skins", myHero.charName .. " Skins", SCRIPT_PARAM_LIST, 1, skinMeta[myHero.charName])
   Tmenu.Misc:setCallback("skins", StartSkin)
 
@@ -289,6 +231,9 @@ function Ziggs()
   Tmenu.Drawing:addParam("Rrange", "Draw R", SCRIPT_PARAM_ONOFF, false)
   Tmenu.Drawing:addParam("Rcolor", "--> R Range Color", SCRIPT_PARAM_COLOR, {255, 186, 85, 211})
   Tmenu.Drawing:addParam("info2", " ", SCRIPT_PARAM_INFO, "")
+  Tmenu.Drawing:addParam("Srange", "Draw Safe Range", SCRIPT_PARAM_ONOFF, false)
+  Tmenu.Drawing:addParam("Scolor", "--> Safe Range Color", SCRIPT_PARAM_COLOR, {255, 186, 85, 211})
+  Tmenu.Drawing:addParam("info2", " ", SCRIPT_PARAM_INFO, "")
   Tmenu.Drawing:addParam("eDamage", "Draw Enemy Damage", SCRIPT_PARAM_ONOFF, true)
 
   Tmenu:addSubMenu("[Da Bomb] Prediction", "pred")
@@ -305,13 +250,6 @@ function OnLoad()
   DelayAction(function() 
     for _, enemy in pairs(sEnemies) do
       table.insert(enemies, enemy.charName)
-    end
-    for i, name in pairs(antiGapClosers) do
-      for a, x in pairs(enemies) do
-        if x == name.Name then
-          Tmenu.anti:addParam(name.Name, name.Name.." > "..name.spellname, SCRIPT_PARAM_ONOFF, true)
-        end
-      end
     end
     for i, name in pairs(autoInterupt) do
       for a, x in pairs(enemies) do
@@ -479,13 +417,12 @@ function OnTick()
   if Tmenu.Misc.exe and isReady(_W) and tower ~= nil then
     Execute()
   end
-  if Tmenu.Misc.UseR and isReady(_R) then
-    KillSteal()
+  if Tmenu.Misc.UseSafeW then
+    SafeW()
   end
   if Tmenu.Misc.Flee then
     Flee()
   end
-  WHandler()
   if DashEndTime ~= nil then
     if DashEndTime < GetGameTimer() then
       DashTarget = nil
@@ -501,6 +438,8 @@ function OnTick()
       dashKnown = false
     end
   end
+  WHandler()
+  KillSteal()
 end
 
 function Flee()
@@ -576,6 +515,13 @@ function WHandler()
   end
 end
 
+function SafeW()
+  local enemy = findClosestEnemy(myHero)
+  if enemy and enemy ~= nil and GetDistanceSqr(enemy) <= Tmenu.Misc.safeWRange * Tmenu.Misc.safeWRange and isReady(_W) then
+    PushWithW(enemy)
+  end
+end
+
 function OnNewPath(unit, startpos, endpos, isDash, dashSpeed)
   if DashTarget ~= nil and unit == DashTarget and GetDash then
     dashstartx = unit.x
@@ -593,16 +539,23 @@ function KillSteal()
   for _, enemy in pairs(sEnemies) do
     local realHPi = (enemy.health + (enemy.hpRegen * 0.05))
     local distance = GetDistanceSqr(enemy)
-    if enemy and ValidTarget(enemy) and distance <= 1999 * 1999 and  distance <= Tmenu.Misc.RRange * Tmenu.Misc.RRange and GetDamage(_R, enemy) > realHPi then
+    if Tmenu.Misc.UseR and enemy and ValidTarget(enemy) and isReady(_R) and distance <= 1999 * 1999 and  distance <= Tmenu.Misc.RRange * Tmenu.Misc.RRange and GetDamage(_R, enemy) > realHPi then
       local CastPosition, HitChance, HeroPosition = UPL:Predict(_R, myHero, enemy)
       if CastPosition and HitChance > 0 then
           CastSpell(_R, CastPosition.x, CastPosition.z)
       end
-    elseif enemy and ValidTarget(enemy) and distance <= 5000 * 5000 and  distance <= Tmenu.Misc.RRange * Tmenu.Misc.RRange and GetDamage(_R, enemy) > realHPi then
-        local CastPosition, HitChance, HeroPosition = UPL:Predict(_R -8, myHero, enemy)
-        if CastPosition and HitChance > 0 then
-          CastSpell(_R, CastPosition.x, CastPosition.z)
-        end
+    elseif Tmenu.Misc.UseR and enemy and ValidTarget(enemy) and isReady(_R) and distance <= 5000 * 5000 and  distance <= Tmenu.Misc.RRange * Tmenu.Misc.RRange and GetDamage(_R, enemy) > realHPi then
+      local CastPosition, HitChance, HeroPosition = UPL:Predict(_R -8, myHero, enemy)
+      if CastPosition and HitChance > 0 then
+        CastSpell(_R, CastPosition.x, CastPosition.z)
+      end
+    elseif Tmenu.Misc.UseW and enemy and ValidTarget(enemy) and isReady(_W) and distance <= 1000 * 1000 and GetDamage(_W, enemy) > realHPi then
+      local CastPosition, HitChance, HeroPosition = UPL:Predict(_W, myHero, enemy)
+      if CastPosition and HitChance > 0 then
+        CastSpell(_W, CastPosition.x, CastPosition.z)
+      elseif isReady(_W) and satchel ~= nil and GetDistanceSqr(satchel, enemy) < 325 * 325 then
+        CastSpell(_W)
+      end
     end
   end
 end
@@ -632,7 +585,7 @@ function Combo()
       end
     end
   end
-  if target ~= nil and ValidTarget(target) and Tmenu.ComboSettings.UseR and isReady(_R) and distance <= 1999 and GetDamage(_R, target) > target.health then
+  if target ~= nil and ValidTarget(target) and Tmenu.ComboSettings.rMode == (2 or 4) and isReady(_R) and distance <= 1999 and GetDamage(_R, target) > target.health then
     local CastPosition, HitChance, HeroPosition = UPL:Predict(_R, myHero, target)
     if CastPosition and HitChance > 0 then
       CastSpell(_R, CastPosition.x, CastPosition.z)
@@ -809,6 +762,9 @@ function OnDraw()
     elseif Tmenu.Drawing.Rrange and not isReady(_R) and isLevel(_R) then
       DrawCircle2(myHero.x, myHero.y, myHero.z, 5000, ARGB(255,255,0,0))
     end
+    if Tmenu.Drawing.Srange and Tmenu.Misc.UseSafeW then
+      DrawCircle2(myHero.x, myHero.y, myHero.z, Tmenu.Misc.safeWRange, ARGB(Tmenu.Drawing.Rcolor[1], Tmenu.Drawing.Rcolor[2], Tmenu.Drawing.Rcolor[3], Tmenu.Drawing.Rcolor[4]))
+    end
   else
     if Tmenu.Drawing.Qrange and isReady(_Q) then
       DrawCircle(myHero.x, myHero.y, myHero.z, 850, ARGB(Tmenu.Drawing.Qcolor[1], Tmenu.Drawing.Qcolor[2], Tmenu.Drawing.Qcolor[3], Tmenu.Drawing.Qcolor[4]))
@@ -829,6 +785,9 @@ function OnDraw()
       DrawCircle(myHero.x, myHero.y, myHero.z, 5000, ARGB(Tmenu.Drawing.Rcolor[1], Tmenu.Drawing.Rcolor[2], Tmenu.Drawing.Rcolor[3], Tmenu.Drawing.Rcolor[4]))
     elseif Tmenu.Drawing.Rrange and not isReady(_R) and isLevel(_R) then
       DrawCircle(myHero.x, myHero.y, myHero.z, 5000, ARGB(255,255,0,0))
+    end
+    if Tmenu.Drawing.Srange and Tmenu.Misc.UseSafeW then
+      DrawCircle(myHero.x, myHero.y, myHero.z, Tmenu.Misc.safeWRange, ARGB(Tmenu.Drawing.Rcolor[1], Tmenu.Drawing.Rcolor[2], Tmenu.Drawing.Rcolor[3], Tmenu.Drawing.Rcolor[4]))
     end
   end
   if Tmenu.Drawing.eDamage then
