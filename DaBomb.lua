@@ -13,7 +13,7 @@ function SexyPrint(message)
   print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end
 
-local version = "0.09"
+local version = "0.091"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/DaBomb.lua".."?rand="..math.random(1,10000)
@@ -763,7 +763,7 @@ function OnDraw()
       DrawCircle2(myHero.x, myHero.y, myHero.z, 5000, ARGB(255,255,0,0))
     end
     if Tmenu.Drawing.Srange and Tmenu.Misc.UseSafeW then
-      DrawCircle2(myHero.x, myHero.y, myHero.z, Tmenu.Misc.safeWRange, ARGB(Tmenu.Drawing.Rcolor[1], Tmenu.Drawing.Rcolor[2], Tmenu.Drawing.Rcolor[3], Tmenu.Drawing.Rcolor[4]))
+      DrawCircle2(myHero.x, myHero.y, myHero.z, Tmenu.Misc.safeWRange, ARGB(Tmenu.Drawing.Scolor[1], Tmenu.Drawing.Scolor[2], Tmenu.Drawing.Scolor[3], Tmenu.Drawing.Scolor[4]))
     end
   else
     if Tmenu.Drawing.Qrange and isReady(_Q) then
@@ -787,7 +787,7 @@ function OnDraw()
       DrawCircle(myHero.x, myHero.y, myHero.z, 5000, ARGB(255,255,0,0))
     end
     if Tmenu.Drawing.Srange and Tmenu.Misc.UseSafeW then
-      DrawCircle(myHero.x, myHero.y, myHero.z, Tmenu.Misc.safeWRange, ARGB(Tmenu.Drawing.Rcolor[1], Tmenu.Drawing.Rcolor[2], Tmenu.Drawing.Rcolor[3], Tmenu.Drawing.Rcolor[4]))
+      DrawCircle(myHero.x, myHero.y, myHero.z, Tmenu.Misc.safeWRange, ARGB(Tmenu.Drawing.Scolor[1], Tmenu.Drawing.Scolor[2], Tmenu.Drawing.Scolor[3], Tmenu.Drawing.Scolor[4]))
     end
   end
   if Tmenu.Drawing.eDamage then
