@@ -13,7 +13,7 @@ function SexyPrint(message)
   print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end
 
-local version = "0.091"
+local version = "0.092"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/DaBomb.lua".."?rand="..math.random(1,10000)
@@ -60,12 +60,10 @@ if not _G.UPLloaded then
   end
 end
 
-UPL:AddSpell(_Q, { speed = 1700, delay = 0.25, range = 850, width = 140, collision = false, aoe = true, type = "circular" })
-UPL:AddSpell(_Q -1, { speed = 1700, delay = 0.25, range = 1400, width = 140, collision = false, aoe = true, type = "circular" })
+UPL:AddSpell(_Q, { speed = 1700, delay = 0.25, range = 1400, width = 150, collision = false, aoe = true, type = "circular" })
 UPL:AddSpell(_W, { speed = 1750, delay = 0.25, range = 1000, width = 325, collision = false, aoe = true, type = "circular" })
-UPL:AddSpell(_E, { speed = 1750, delay = 0.25, range = 900, width = 325, collision = false, aoe = true, type = "circular" })
-UPL:AddSpell(_R, { speed = 1550, delay = 0.375, range = 5000, width = 450, collision = false, aoe = true, type = "circular" }) --< 2000 units
-UPL:AddSpell(_R -8, { speed = math.huge, delay = 1.575, range = 1999, width = 450, collision = false, aoe = true, type = "circular" }) --> 2000 units
+UPL:AddSpell(_E, { speed = 1750, delay = 0.25, range = 900, width = 250, collision = false, aoe = true, type = "circular" })
+UPL:AddSpell(_R, { speed = 1550, delay = 0.375, range = 5000, width = 450, collision = false, aoe = true, type = "circular" })
 
 local jungleMinions = minionManager(MINION_JUNGLE, 850, myHero, MINION_SORT_MAXHEALTH_DEC)
 local targetMinions = minionManager(MINION_ENEMY, 1400, myHero, MINION_SORT_MAXHEALTH_DEC)
@@ -144,9 +142,16 @@ local spellDmg =
   [_R] =
   function(unit)
     if isReady(_R) then
-      return myHero:CalcMagicDamage(unit, (((((myHero:GetSpellData(_R).level * 150) + 150) + (myHero.ap * 1.1)) / 3) * 2)) --outter radius 
+      return myHero:CalcMagicDamage(unit, (((((myHero:GetSpellData(_R).level * 150) + 150) + (myHero.ap * 1.1)) / 3) * 2)) --Outer Radius 
     end
-  end
+  end--[[,
+
+  ["_R2"] =
+  function(unit)
+    if isReady(_R) then
+      return myHero:CalcMagicDamage(unit, ((myHero:GetSpellData(_R).level * 150) + 150) + (myHero.ap * 1.1)) --Center Radius 
+    end
+  end]]
 }
 
 --credits Deftsu--
@@ -187,6 +192,8 @@ function Ziggs()
 
   Tmenu:addSubMenu("[Da Bomb] Harass Settings", "HarassSettings")
   Tmenu.HarassSettings:addParam("UseQ", "Auto Q 'Harass'", SCRIPT_PARAM_ONKEYTOGGLE, false, GetKey("L"))
+  Tmenu.HarassSettings:permaShow("UseQ")
+  Tmenu.HarassSettings:addParam("ManaManager", "Auto Q Mana", SCRIPT_PARAM_SLICE, 40, 0, 100) 
 
   Tmenu:addSubMenu("[Da Bomb] LaneClear Settings", "ClearSettings")
   Tmenu.ClearSettings:addParam("UseQ", "Use Q in 'LaneClear'", SCRIPT_PARAM_ONOFF, true)
@@ -411,7 +418,7 @@ function OnTick()
     Laneclear()
     Jungleclear()
   end
-  if Tmenu.HarassSettings.UseQ and isReady(_Q) then
+  if Tmenu.HarassSettings.UseQ then
     Harass()
   end
   if Tmenu.Misc.exe and isReady(_W) and tower ~= nil then
@@ -459,7 +466,7 @@ end
 function Execute()
   if GetDistance(tower) < 1000 and satchel == nil then
     CastSpell(_W, tower.x, tower.z)
-  elseif satchel ~= nil and GetDistance(satchel, tower) < 300 then
+  elseif satchel ~= nil and GetDistance(satchel, tower) < 325 then
     CastSpell(_W)
   end
 end
@@ -474,7 +481,7 @@ function PullWithW(unit)
     CastSpell(_W, posX, posZ)
     DashTarget = unit
     GetDash = true
-    if satchel ~= nil and GetDistance(unit, satchel) < 300 then
+    if satchel ~= nil and GetDistance(unit, satchel) < 325 then
       CastSpell(_W)
       DashTarget = unit
       GetDash = true
@@ -492,7 +499,7 @@ function PushWithW(unit)
     CastSpell(_W, posX, posZ)
     DashTarget = unit
     GetDash = true
-    if satchel ~= nil and GetDistance(unit, satchel) < 300 then
+    if satchel ~= nil and GetDistance(unit, satchel) < 325 then
       CastSpell(_W)
       DashTarget = unit
       GetDash = true
@@ -503,12 +510,12 @@ end
 function WHandler()
   if Tmenu.Misc.pull and isReady(_W) then
     local target = GetTarget(1000)
-    if target ~= nil and ValidTarget(target) and GetDistance(target) < 900 then
+    if target ~= nil and ValidTarget(target) and GetDistance(target) < 800 then
       PullWithW(target)
     end
   end
   if Tmenu.Misc.push and isReady(_W) then
-    local target = GetTarget(950)
+    local target = GetTarget(1000)
     if target ~= nil and ValidTarget(target) and GetDistance(target) < 1000 then
       PushWithW(target)
     end
@@ -538,22 +545,20 @@ end
 function KillSteal()
   for _, enemy in pairs(sEnemies) do
     local realHPi = (enemy.health + (enemy.hpRegen * 0.05))
-    local distance = GetDistanceSqr(enemy)
-    if Tmenu.Misc.UseR and enemy and ValidTarget(enemy) and isReady(_R) and distance <= 1999 * 1999 and  distance <= Tmenu.Misc.RRange * Tmenu.Misc.RRange and GetDamage(_R, enemy) > realHPi then
-      local CastPosition, HitChance, HeroPosition = UPL:Predict(_R, myHero, enemy)
-      if CastPosition and HitChance > 0 then
+    if enemy ~= nil and ValidTarget(enemy) then
+      local distance = GetDistanceSqr(enemy)
+      if Tmenu.Misc.UseR and isReady(_R) and distance <= Tmenu.Misc.RRange ^ 2 and GetDamage(_R, enemy) > realHPi then
+        local CastPosition, HitChance, HeroPosition = UPL:Predict(_R, myHero, enemy)
+        if CastPosition and HitChance > 0 then
           CastSpell(_R, CastPosition.x, CastPosition.z)
+        end
       end
-    elseif Tmenu.Misc.UseR and enemy and ValidTarget(enemy) and isReady(_R) and distance <= 5000 * 5000 and  distance <= Tmenu.Misc.RRange * Tmenu.Misc.RRange and GetDamage(_R, enemy) > realHPi then
-      local CastPosition, HitChance, HeroPosition = UPL:Predict(_R -8, myHero, enemy)
-      if CastPosition and HitChance > 0 then
-        CastSpell(_R, CastPosition.x, CastPosition.z)
-      end
-    elseif Tmenu.Misc.UseW and enemy and ValidTarget(enemy) and isReady(_W) and distance <= 1000 * 1000 and GetDamage(_W, enemy) > realHPi then
-      local CastPosition, HitChance, HeroPosition = UPL:Predict(_W, myHero, enemy)
-      if CastPosition and HitChance > 0 then
-        CastSpell(_W, CastPosition.x, CastPosition.z)
-      elseif isReady(_W) and satchel ~= nil and GetDistanceSqr(satchel, enemy) < 325 * 325 then
+      if Tmenu.Misc.UseW and isReady(_W) and satchel == nil and distance <= 1000 ^ 2 and GetDamage(_W, enemy) > realHPi then
+        local CastPosition, HitChance, HeroPosition = UPL:Predict(_W, myHero, enemy)
+        if CastPosition and HitChance > 0 then
+          CastSpell(_W, CastPosition.x, CastPosition.z)
+        end
+      elseif Tmenu.Misc.UseW and isReady(_W) and satchel ~= nil and GetDistanceSqr(satchel, enemy) < 325 ^ 2 then
         CastSpell(_W)
       end
     end
@@ -572,69 +577,41 @@ function OnProcessSpell(unit, spell)
 end
 
 function Combo()
-  local target = GetTarget(900)
-  local distance = GetDistance(myHero, target)
-  if CountEnemyHeroInRange(1200, myHero) == 1 and Tmenu.ComboSettings.UseE and Tmenu.ComboSettings.UseQ and Tmenu.ComboSettings.UseW and isReady(_Q) and isReady(_W) and isReady(_E) then
-    local target = GetTarget(1450)
-    local distance = GetDistance(myHero, target)
-    if target ~= nil and ValidTarget(target) and distance < 900 then
-      PullWithW(target)
-      if dashKnown then
-        CastSpell(_E, dashx, dashz)
-        DelayAction(function() CastSpell(_Q, dashx, dashz) end, 0.1)
-      end
-    end
-  end
-  if target ~= nil and ValidTarget(target) and Tmenu.ComboSettings.rMode == (2 or 4) and isReady(_R) and distance <= 1999 and GetDamage(_R, target) > target.health then
-    local CastPosition, HitChance, HeroPosition = UPL:Predict(_R, myHero, target)
-    if CastPosition and HitChance > 0 then
-      CastSpell(_R, CastPosition.x, CastPosition.z)
-    end
-  end
-  if target ~= nil and ValidTarget(target) and Tmenu.ComboSettings.UseE and isReady(_E) and distance < 900 then
-    local CastPosition, HitChance, HeroPosition = UPL:Predict(_E, myHero, target)
-    if CastPosition and HitChance > 0 then
-      CastSpell(_E, CastPosition.x, CastPosition.z)
-    end
-  end
-  if isReady(_Q) then
-    local target = GetTarget(1450)
-    local distance = GetDistance(myHero, target)
-    if target ~= nil and ValidTarget(target) and Tmenu.ComboSettings.UseQ and distance < 850 then
+  local target = GetTarget(1400)
+  if target ~= nil and ValidTarget(target) then
+    local distance = GetDistanceSqr(target)
+    if Tmenu.ComboSettings.UseQ and isReady(_Q) and distance < 1400 ^ 2 then
       local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q, myHero, target)
       if CastPosition and HitChance > 0 then
         CastSpell(_Q, CastPosition.x, CastPosition.z)
       end
-    elseif target ~= nil and ValidTarget(target) and Tmenu.ComboSettings.UseQ and isBetween(851, 1400, myHero, target) then
-      local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q - 1, myHero, target)
+    end
+    if Tmenu.ComboSettings.UseW and isReady(_W) and distance < 1000 ^ 2 and satchel == nil then
+      local CastPosition, HitChance, HeroPosition = UPL:Predict(_W, myHero, target)
       if CastPosition and HitChance > 0 then
-        CastSpell(_Q, CastPosition.x, CastPosition.z)
+        CastSpell(_W, CastPosition.x, CastPosition.z)
+      end
+    elseif Tmenu.ComboSettings.UseW and isReady(_W) and satchel ~= nil and GetDistanceSqr(satchel, target) < 325 ^ 2 then
+      CastSpell(_W)
+    end
+    if Tmenu.ComboSettings.UseE and isReady(_E) and distance < 900 ^ 2 then
+      local CastPosition, HitChance, HeroPosition = UPL:Predict(_E, myHero, target)
+      if CastPosition and HitChance > 0 then
+        CastSpell(_E, CastPosition.x, CastPosition.z)
       end
     end
-  end
-  if target ~= nil and ValidTarget(target) and Tmenu.ComboSettings.UseW and isReady(_W) and distance < 1000 and satchel == nil then
-    local CastPosition, HitChance, HeroPosition = UPL:Predict(_W, myHero, target)
-    if CastPosition and HitChance > 0 then
-      CastSpell(_W, CastPosition.x, CastPosition.z)
-    end
-  end
-  if Tmenu.ComboSettings.UseW and isReady(_W) and satchel ~= nil and GetDistance(satchel, target) < 325 then
-    CastSpell(_W)
   end
 end
 
 function Harass()
-  local target = GetTarget(1450)
-  local distance = GetDistance(myHero, target)
-  if target ~= nil and ValidTarget(target) and distance < 850 then
-    local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q, myHero, target)
-    if CastPosition and HitChance > 0 then
-      CastSpell(_Q, CastPosition.x, CastPosition.z)
-    end
-  elseif target ~= nil and ValidTarget(target) and isBetween(851, 1400, myHero, target) then
-    local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q - 1, myHero, target)
-    if CastPosition and HitChance > 0 then
-      CastSpell(_Q, CastPosition.x, CastPosition.z)
+  local target = GetTarget(1400)
+  if target ~= nil and ValidTarget(target) then
+    local distance = GetDistanceSqr(target)
+    if isReady(_Q) and (myHero.mana / myHero.maxMana > Tmenu.HarassSettings.ManaManager / 100) and distance < 1400 ^ 2 then
+      local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q, myHero, target)
+      if CastPosition and HitChance > 0 then
+        CastSpell(_Q, CastPosition.x, CastPosition.z)
+      end
     end
   end
 end
@@ -642,27 +619,28 @@ end
 function Laneclear()
   targetMinions:update()
   for i, targetMinion in pairs(targetMinions.objects) do
-    local distance = GetDistance(targetMinion, myHero)
-    if targetMinion ~= nil and ValidTarget(targetMinion) and Tmenu.ClearSettings.UseE and isReady(_E) and distance < 900 and GetMinionsHit(targetMinion, 300) >= Tmenu.ClearSettings.Ehit then
-      local CastPosition, HitChance, HeroPosition = UPL:Predict(_E, myHero, targetMinion)
-      if CastPosition and HitChance > 0 then
-        CastSpell(_E, CastPosition.x, CastPosition.z)
+    if targetMinion ~= nil and ValidTarget(targetMinion) then 
+      local distance = GetDistanceSqr(targetMinion)
+      if Tmenu.ClearSettings.UseE and isReady(_E) and distance < 900 ^ 2 and GetMinionsHit(targetMinion, 325) >= Tmenu.ClearSettings.Ehit then
+        local CastPosition, HitChance, HeroPosition = UPL:Predict(_E, myHero, targetMinion)
+        if CastPosition and HitChance > 0 then
+          CastSpell(_E, CastPosition.x, CastPosition.z)
+        end
       end
-    end
-    if targetMinion ~= nil and ValidTarget(targetMinion) and Tmenu.ClearSettings.UseQ and isReady(_Q) and distance < 850 and GetMinionsHit(targetMinion, 140) >= Tmenu.ClearSettings.Qhit then
-      local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q, myHero, targetMinion)
-      if CastPosition and HitChance > 0 then
-        CastSpell(_Q, CastPosition.x, CastPosition.z)
+      if Tmenu.ClearSettings.UseQ and isReady(_Q) and distance < 1400 ^ 2 and GetMinionsHit(targetMinion, 150) >= Tmenu.ClearSettings.Qhit then
+        local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q, myHero, targetMinion)
+        if CastPosition and HitChance > 0 then
+          CastSpell(_Q, CastPosition.x, CastPosition.z)
+        end
       end
-    end
-    if targetMinion ~= nil and ValidTarget(targetMinion) and Tmenu.ClearSettings.UseW and isReady(_W) and distance < 1000 and GetMinionsHit(targetMinion, 300) >= Tmenu.ClearSettings.Whit then
-      local CastPosition, HitChance, HeroPosition = UPL:Predict(_W, myHero, targetMinion)
-      if CastPosition and HitChance > 0 then
-        CastSpell(_W, CastPosition.x, CastPosition.z)
+      if Tmenu.ClearSettings.UseW and isReady(_W) and satchel == nil and distance < 1000 ^ 2 and GetMinionsHit(targetMinion, 325) >= Tmenu.ClearSettings.Whit then
+        local CastPosition, HitChance, HeroPosition = UPL:Predict(_W, myHero, targetMinion)
+        if CastPosition and HitChance > 0 then
+          CastSpell(_W, CastPosition.x, CastPosition.z)
+        end
+      elseif Tmenu.ClearSettings.UseW and isReady(_W) and satchel ~= nil and GetDistanceSqr(satchel, targetMinion) < 325 ^ 2 and GetMinionsHit(targetMinion, 325) >= Tmenu.ClearSettings.Whit then
+        CastSpell(_W)
       end
-    end
-    if Tmenu.ClearSettings.UseW and isReady(_W) and satchel ~= nil then
-      CastSpell(_W)
     end
   end
 end
@@ -673,27 +651,28 @@ function Jungleclear()
     if jungleMinion.name:find("Plant") then
       return
     end
-    local distance = GetDistance(jungleMinion, myHero)
-    if jungleMinion ~= nil and ValidTarget(jungleMinion) and Tmenu.JungleSettings.UseE and isReady(_E) and distance < 900 then
-      local CastPosition, HitChance, HeroPosition = UPL:Predict(_E, myHero, jungleMinion)
-      if CastPosition and HitChance > 0 then
-        CastSpell(_E, CastPosition.x, CastPosition.z)
+    if jungleMinion ~= nil and ValidTarget(jungleMinion) then
+      local distance = GetDistanceSqr(jungleMinion)
+      if Tmenu.JungleSettings.UseE and isReady(_E) and distance < 900 ^ 2 then
+        local CastPosition, HitChance, HeroPosition = UPL:Predict(_E, myHero, jungleMinion)
+        if CastPosition and HitChance > 0 then
+          CastSpell(_E, CastPosition.x, CastPosition.z)
+        end
       end
-    end
-    if jungleMinion ~= nil and ValidTarget(jungleMinion) and Tmenu.JungleSettings.UseQ and isReady(_Q) and distance < 850 then
-      local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q, myHero, jungleMinion)
-      if CastPosition and HitChance > 0 then
-        CastSpell(_Q, CastPosition.x, CastPosition.z)
+      if Tmenu.JungleSettings.UseQ and isReady(_Q) and distance < 1400 ^ 2 then
+        local CastPosition, HitChance, HeroPosition = UPL:Predict(_Q, myHero, jungleMinion)
+        if CastPosition and HitChance > 0 then
+          CastSpell(_Q, CastPosition.x, CastPosition.z)
+        end
       end
-    end
-    if jungleMinion ~= nil and ValidTarget(jungleMinion) and Tmenu.JungleSettings.UseW and isReady(_W) and distance < 1000 and satchel == nil then
-      local CastPosition, HitChance, HeroPosition = UPL:Predict(_W, myHero, jungleMinion)
-      if CastPosition and HitChance > 0 then
-        CastSpell(_W, CastPosition.x, CastPosition.z)
+      if Tmenu.JungleSettings.UseW and isReady(_W) and distance < 1000 ^ 2 and satchel == nil then
+        local CastPosition, HitChance, HeroPosition = UPL:Predict(_W, myHero, jungleMinion)
+        if CastPosition and HitChance > 0 then
+          CastSpell(_W, CastPosition.x, CastPosition.z)
+        end
+      elseif Tmenu.JungleSettings.UseW and isReady(_W) and satchel ~= nil and GetDistanceSqr(satchel, jungleMinion) < 325 ^ 2 then
+        CastSpell(_W)
       end
-    end
-    if Tmenu.JungleSettings.UseW and isReady(_W) and satchel ~= nil and GetDistance(satchel, jungleMinion) < 325 then
-      CastSpell(_W)
     end
   end
 end
