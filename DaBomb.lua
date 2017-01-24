@@ -13,7 +13,7 @@ function SexyPrint(message)
   print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end
 
-local version = "0.092"
+local version = "0.093"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/DaBomb.lua".."?rand="..math.random(1,10000)
@@ -63,7 +63,7 @@ end
 UPL:AddSpell(_Q, { speed = 1700, delay = 0.25, range = 1400, width = 150, collision = false, aoe = true, type = "circular" })
 UPL:AddSpell(_W, { speed = 1750, delay = 0.25, range = 1000, width = 325, collision = false, aoe = true, type = "circular" })
 UPL:AddSpell(_E, { speed = 1750, delay = 0.25, range = 900, width = 250, collision = false, aoe = true, type = "circular" })
-UPL:AddSpell(_R, { speed = 1550, delay = 0.375, range = 5000, width = 450, collision = false, aoe = true, type = "circular" })
+UPL:AddSpell(_R, { speed = 2000, delay = 0.375, range = 5000, width = 450, collision = false, aoe = true, type = "circular" })
 
 local jungleMinions = minionManager(MINION_JUNGLE, 850, myHero, MINION_SORT_MAXHEALTH_DEC)
 local targetMinions = minionManager(MINION_ENEMY, 1400, myHero, MINION_SORT_MAXHEALTH_DEC)
