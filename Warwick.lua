@@ -13,7 +13,7 @@ function SexyPrint(message)
   	print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end
 
-local version = "0.02"
+local version = "0.03"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/Warwick.lua".."?rand="..math.random(1,10000)
@@ -318,7 +318,7 @@ function Jungleclear()
       		return
     	end
     	if jungleMinion ~= nil and ValidTarget(jungleMinion) then
-    		local distance = GetDistance(jungleMinion)
+    		local distance = GetDistanceSqr(jungleMinion)
     		if Warwick.jSet.useQ == 2 and isReady(_Q) and distance <= 350 ^ 2 then
     			CastSpell(_Q, jungleMinion)
     			CastSpell2(_Q, D3DXVECTOR3(myHero.x, myHero.y, myHero.z))
