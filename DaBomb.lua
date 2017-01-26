@@ -8,12 +8,12 @@ TrackerLoad("CmQG7EygTLxr7NNb")
 
 --SexySexyPrint by Azero--
 function SexyPrint(message)
-  local sexyName = "<font color=\"#FF5733\">[<b><i>Da Bomb</i></b>]</font>"
-  local fontColor = "3393FF"
-  print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
+   local sexyName = "<font color=\"#FF5733\">[<b><i>Da Bomb</i></b>]</font>"
+   local fontColor = "3393FF"
+   print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end
 
-local version = "0.093"
+local version = "0.094"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/DaBomb.lua".."?rand="..math.random(1,10000)
@@ -187,7 +187,7 @@ function Ziggs()
   Tmenu.ComboSettings:addParam("UseQ", "Use Q in 'Combo'", SCRIPT_PARAM_ONOFF, true)
   Tmenu.ComboSettings:addParam("UseW", "Use W in 'Combo'", SCRIPT_PARAM_ONOFF, false)
   Tmenu.ComboSettings:addParam("UseE", "Use E in 'Combo'", SCRIPT_PARAM_ONOFF, true)
-  Tmenu.ComboSettings:addParam("rMode", "R Mode", SCRIPT_PARAM_LIST, 1, {"Off", "Can Kill", "#Enemies", "Both"})
+  Tmenu.ComboSettings:addParam("rMode", "R Mode", SCRIPT_PARAM_LIST, 2, {"Off", "Always", "Can Kill", "#Enemies", "Both"})
   Tmenu.ComboSettings:addParam("rMode2", "#Enemies to Ult", SCRIPT_PARAM_SLICE, 3, 1, 5)
 
   Tmenu:addSubMenu("[Da Bomb] Harass Settings", "HarassSettings")
@@ -598,6 +598,12 @@ function Combo()
       local CastPosition, HitChance, HeroPosition = UPL:Predict(_E, myHero, target)
       if CastPosition and HitChance > 0 then
         CastSpell(_E, CastPosition.x, CastPosition.z)
+      end
+    end
+    if Tmenu.ComboSettings.rMode == 1 and isReady(_R) and distance < 1000 ^ 2 then
+      local CastPosition, HitChance, HeroPosition = UPL:Predict(_R, myHero, target)
+      if CastPosition and HitChance > 0 then
+        CastSpell(_R, CastPosition.x, CastPosition.z)
       end
     end
   end
