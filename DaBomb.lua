@@ -13,7 +13,7 @@ function SexyPrint(message)
    print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end
 
-local version = "0.094"
+local version = "0.095"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/DaBomb.lua".."?rand="..math.random(1,10000)
@@ -188,6 +188,7 @@ function Ziggs()
   Tmenu.ComboSettings:addParam("UseW", "Use W in 'Combo'", SCRIPT_PARAM_ONOFF, false)
   Tmenu.ComboSettings:addParam("UseE", "Use E in 'Combo'", SCRIPT_PARAM_ONOFF, true)
   Tmenu.ComboSettings:addParam("rMode", "R Mode", SCRIPT_PARAM_LIST, 2, {"Off", "Always", "Can Kill", "#Enemies", "Both"})
+  Tmenu.ComboSettings:addParam("RRange", "R Range for Always", SCRIPT_PARAM_SLICE, 1000, 0, 5000)
   Tmenu.ComboSettings:addParam("rMode2", "#Enemies to Ult", SCRIPT_PARAM_SLICE, 3, 1, 5)
 
   Tmenu:addSubMenu("[Da Bomb] Harass Settings", "HarassSettings")
@@ -600,7 +601,7 @@ function Combo()
         CastSpell(_E, CastPosition.x, CastPosition.z)
       end
     end
-    if Tmenu.ComboSettings.rMode == 1 and isReady(_R) and distance < 1000 ^ 2 then
+    if Tmenu.ComboSettings.rMode == 1 and isReady(_R) and distance < Tmenu.ComboSettings.RRange ^ 2 then
       local CastPosition, HitChance, HeroPosition = UPL:Predict(_R, myHero, target)
       if CastPosition and HitChance > 0 then
         CastSpell(_R, CastPosition.x, CastPosition.z)
