@@ -13,7 +13,7 @@ function SexyPrint(message)
    print(sexyName .. " <font color=\"#" .. fontColor .. "\">" .. message .. "</font>")
 end
 
-local version = "0.02"
+local version = "0.03"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.githubusercontent.com"
 local UPDATE_PATH = "/Icesythe7/GOS/master/BallBitch.lua".."?rand="..math.random(1,10000)
@@ -60,7 +60,7 @@ if not _G.UPLloaded then
   	end
 end
 
-UPL:AddSpell(_Q, {speed = 1150, delay = 0.25, range = 815, width = 140, collision = false, aoe = true, type = "linear"})
+UPL:AddSpell(_Q, {speed = 1200, delay = 0, range = 815, width = 175, collision = false, aoe = true, type = "linear"})
 
 local ts = TargetSelector(TARGET_LESS_CAST, 900)
 local enemies = GetEnemyHeroes()
